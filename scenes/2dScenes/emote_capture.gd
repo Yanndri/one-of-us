@@ -1,5 +1,8 @@
 extends SubViewport
 
+# Renders a separate leader on transparency to create the rhythm-lane icons.
+# Images stay in memory only; this script does not save files.
+
 @onready var animation_player: AnimationPlayer = $Leader/AnimationPlayer
 
 var pose_textures: Dictionary = {}
@@ -23,6 +26,7 @@ func capture_poses() -> Dictionary:
 		animation_player.seek(poses[action]["time"], true)
 		animation_player.pause()
 		render_target_update_mode = SubViewport.UPDATE_ONCE
+		# Read the image only after the GPU has rendered the requested pose.
 		await RenderingServer.frame_post_draw
 		var image := get_texture().get_image()
 		if image == null or image.is_empty():

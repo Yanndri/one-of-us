@@ -1,5 +1,8 @@
 extends Control
 
+# Displays the round clock. Step positions stay fixed while the markers move.
+# This script shows results; RoundController is responsible for judging input.
+
 @onready var leader_marker: Control = $LeaderMarker
 @onready var player_marker: Control = $PlayerMark
 @onready var step_plots: Control = $StepPlots
@@ -21,6 +24,7 @@ func show_leader(progress: float) -> void:
 
 
 func prepare_icons() -> void:
+	# The offscreen character is rendered once per pose, then its images are reused.
 	pose_textures = await $EmoteCapture.capture_poses()
 
 
@@ -32,6 +36,7 @@ func show_player(progress: float) -> void:
 
 
 func plot_step(index: int, progress: float, action: StringName) -> void:
+	# Called when the leader performs a step; never reveal future steps early.
 	if step_plots.has_node("Step%d" % index):
 		return
 	var step := Control.new()
@@ -80,6 +85,7 @@ func plot_step(index: int, progress: float, action: StringName) -> void:
 
 
 func show_result(index: int, result: String) -> void:
+	# Update the existing tick and label without moving their timing position.
 	var step := step_plots.get_node_or_null("Step%d" % index)
 	if step == null:
 		return
@@ -91,6 +97,7 @@ func show_result(index: int, result: String) -> void:
 
 
 func _layout_marks() -> void:
+	# Normalized progress (0 to 1) lets resizing keep notes and markers aligned.
 	if not is_node_ready():
 		return
 	var travel := maxf(size.x - leader_marker.size.x, 0.0)

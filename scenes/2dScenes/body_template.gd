@@ -1,10 +1,7 @@
 extends CharacterBody2D
-#
-#@export var body_sprite : Texture2D
-#@export var face_sprite : Texture2D
-#@export var wavehand_sprite : Texture2D
-#@export var pointhand_sprite : Texture2D
-#@export var peacehand_sprite : Texture2D
+
+# Shared I/J/K/L face-movement test. Appearance comes from the FaceSprites child.
+# Player uses its own script instead of this test controller.
 
 @export var face_move_distance: float = 10.0
 @export var face_tween_duration: float = 0.15

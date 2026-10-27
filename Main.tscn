@@ -16,6 +16,9 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oxdc4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ptkwr"]
+bg_color = Color(0.83137256, 0.4745098, 0, 1)
+border_width_bottom = 12
+border_color = Color(0.70980394, 0.19215687, 0.25882354, 1)
 corner_radius_top_left = 100
 corner_radius_top_right = 100
 corner_radius_bottom_right = 100
