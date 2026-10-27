@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bvpvx7hri8xm6"]
+
+[ext_resource type="PackedScene" uid="uid://cbb533vdh4aru" path="res://scenes/2dScenes/body_template.tscn" id="1_3vyb7"]
+[ext_resource type="Script" uid="uid://bopy3akoprg4b" path="res://scenes/2dScenes/player.gd" id="2_player"]
+
+[node name="Player" unique_id=909801526 groups=["Player"] instance=ExtResource("1_3vyb7")]
+script = ExtResource("2_player")
+pointing_tween_duration = 0.2

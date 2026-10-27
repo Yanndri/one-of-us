@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://cirj73qdnw62d"]
+
+[ext_resource type="PackedScene" uid="uid://bo77cccgx22d2" path="res://scenes/3dScenes/player3d.tscn" id="1_3hcyh"]
+
+[sub_resource type="Environment" id="Environment_example"]
+background_mode = 1
+background_color = Color(0.12, 0.16, 0.19, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.8, 0.85, 1, 1)
+ambient_light_energy = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Material_floor"]
+albedo_color = Color(0.36, 0.43, 0.42, 1)
+
+[sub_resource type="PlaneMesh" id="Mesh_floor"]
+material = SubResource("Material_floor")
+size = Vector2(12, 12)
+
+[sub_resource type="StandardMaterial3D" id="Material_wood"]
+albedo_color = Color(0.62, 0.38, 0.19, 1)
+roughness = 0.85
+
+[sub_resource type="CylinderMesh" id="Mesh_tabletop"]
+material = SubResource("Material_wood")
+top_radius = 1.5
+bottom_radius = 1.5
+height = 0.16
+
+[sub_resource type="CylinderMesh" id="Mesh_pedestal"]
+material = SubResource("Material_wood")
+top_radius = 0.18
+bottom_radius = 0.28
+height = 0.82
+
+[sub_resource type="CylinderMesh" id="Mesh_base"]
+material = SubResource("Material_wood")
+top_radius = 0.65
+bottom_radius = 0.7
+height = 0.1
+
+[node name="Mixed2D3DExample" type="Node3D" unique_id=1552315379]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=945348310]
+environment = SubResource("Environment_example")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1402348733]
+transform = Transform3D(0.8660254, 0.40957603, -0.28678823, 0, 0.57357645, 0.81915206, 0.5, -0.7094065, 0.49673176, 0, 0, 0)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=879074538]
+transform = Transform3D(1, 0, 0, 0, 1.1924881e-08, 1, 0, -1, 1.1924881e-08, 0, 6, 0.77075577)
+projection = 1
+current = true
+size = 8.0
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=1910193629]
+mesh = SubResource("Mesh_floor")
+
+[node name="Table" type="Node3D" parent="." unique_id=791352753]
+
+[node name="Tabletop" type="MeshInstance3D" parent="Table" unique_id=1911565949]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("Mesh_tabletop")
+
+[node name="Pedestal" type="MeshInstance3D" parent="Table" unique_id=843061071]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.41, 0)
+mesh = SubResource("Mesh_pedestal")
+
+[node name="Base" type="MeshInstance3D" parent="Table" unique_id=2009882636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("Mesh_base")
+
+[node name="Interface" type="CanvasLayer" parent="." unique_id=878323065]
+
+[node name="Title" type="Label" parent="Interface" unique_id=1362295173]
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 600.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 22
+text = "One Player, four NPCs, one Leader"
+
+[node name="Caption" type="Label" parent="Interface" unique_id=460208797]
+offset_left = 24.0
+offset_top = 52.0
+offset_right = 600.0
+offset_bottom = 80.0
+text = "Each character has its own SubViewport and Sprite3D | Visual demo"
+
+[node name="Player" parent="." unique_id=55131719 instance=ExtResource("1_3hcyh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.2253466, 1)

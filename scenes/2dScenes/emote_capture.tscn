@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/2dScenes/leader.tscn" id="1_leader"]
+[ext_resource type="Script" path="res://scenes/2dScenes/emote_capture.gd" id="2_capture"]
+
+[sub_resource type="World2D" id="World2D_capture"]
+
+[node name="EmoteCapture" type="SubViewport"]
+disable_3d = true
+world_2d = SubResource("World2D_capture")
+transparent_bg = true
+gui_disable_input = true
+size = Vector2i(256, 256)
+render_target_update_mode = 0
+script = ExtResource("2_capture")
+
+[node name="Leader" parent="." instance=ExtResource("1_leader")]
+position = Vector2(128, 128)

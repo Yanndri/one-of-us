@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bo77cccgx22d2"]
+
+[ext_resource type="PackedScene" uid="uid://c3seu0p8nknat" path="res://scenes/3dScenes/body_template_3d.tscn" id="1_cg1kj"]
+[ext_resource type="Script" path="res://scenes/3dScenes/player3d.gd" id="2_player"]
+
+[node name="Player" type="Node3D" unique_id=55131719]
+script = ExtResource("2_player")
+
+[node name="BodyTemplate3D" parent="." unique_id=2023043874 instance=ExtResource("1_cg1kj")]
+
+[editable path="BodyTemplate3D"]

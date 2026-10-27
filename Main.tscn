@@ -1,0 +1,283 @@
+[gd_scene format=3 uid="uid://cam38fm3xfdqy"]
+
+[ext_resource type="PackedScene" uid="uid://c7i0tyogfuh5x" path="res://scenes/2dScenes/npc.tscn" id="1_glv2v"]
+[ext_resource type="PackedScene" uid="uid://ce0dv1wsmflt" path="res://scenes/2dScenes/leader.tscn" id="4_cm0pq"]
+[ext_resource type="Theme" uid="uid://disxpgqeuwt71" path="res://themes/main_theme.tres" id="5_lgr22"]
+[ext_resource type="PackedScene" uid="uid://bvpvx7hri8xm6" path="res://scenes/2dScenes/player.tscn" id="5_player"]
+[ext_resource type="Texture2D" uid="uid://das1eervkoleo" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_w.svg" id="6_5vvyt"]
+[ext_resource type="Script" uid="uid://ys10aak3n2ed" path="res://scenes/2dScenes/round_controller.gd" id="6_round"]
+[ext_resource type="Texture2D" uid="uid://cct0ni4t8oj0" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_a.svg" id="7_c6i3y"]
+[ext_resource type="Script" uid="uid://nt853iew3xan" path="res://scenes/2dScenes/rhythm_lane.gd" id="7_lane"]
+[ext_resource type="Texture2D" uid="uid://dfccy13mt6gjd" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_s.svg" id="8_c2ibq"]
+[ext_resource type="PackedScene" path="res://scenes/2dScenes/emote_capture.tscn" id="8_capture"]
+[ext_resource type="Texture2D" uid="uid://c3tnqxjs224gl" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_d.svg" id="9_j4qnp"]
+[ext_resource type="Texture2D" uid="uid://cfv0xucxrhhcy" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/mouse_left.svg" id="10_fpfj3"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oxdc4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ptkwr"]
+corner_radius_top_left = 100
+corner_radius_top_right = 100
+corner_radius_bottom_right = 100
+corner_radius_bottom_left = 100
+corner_detail = 3
+
+[sub_resource type="Gradient" id="Gradient_cm0pq"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_oxdc4"]
+gradient = SubResource("Gradient_cm0pq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ptkwr"]
+texture = SubResource("GradientTexture2D_oxdc4")
+
+[sub_resource type="Gradient" id="Gradient_fos0i"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_3dxm6"]
+gradient = SubResource("Gradient_fos0i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lgr22"]
+texture = SubResource("GradientTexture2D_3dxm6")
+
+[sub_resource type="Gradient" id="Gradient_trn2v"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(0.67058825, 0, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_03owx"]
+gradient = SubResource("Gradient_trn2v")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wkp8b"]
+texture = SubResource("GradientTexture2D_03owx")
+
+[node name="Node2D" type="Node2D" unique_id=540957774]
+
+[node name="RoundController" type="Node" parent="." unique_id=1906648030]
+script = ExtResource("6_round")
+
+[node name="Player" parent="." unique_id=909801526 instance=ExtResource("5_player")]
+position = Vector2(465, 84)
+
+[node name="Leader" parent="." unique_id=1348250996 instance=ExtResource("4_cm0pq")]
+position = Vector2(849, 245)
+
+[node name="NPC" parent="." unique_id=270160221 instance=ExtResource("1_glv2v")]
+position = Vector2(241, 332)
+rotation = 0.19566298
+
+[node name="NPC2" parent="." unique_id=117362958 instance=ExtResource("1_glv2v")]
+position = Vector2(661.99994, 338.00003)
+rotation = -0.187199
+
+[node name="NPC5" parent="." unique_id=1352080746 instance=ExtResource("1_glv2v")]
+position = Vector2(460.00003, 399)
+rotation = 0.0201395
+
+[node name="NPC3" parent="." unique_id=1092891593 instance=ExtResource("1_glv2v")]
+position = Vector2(684, 139.00002)
+rotation = 0.4106164
+
+[node name="NPC4" parent="." unique_id=1348640060 instance=ExtResource("1_glv2v")]
+position = Vector2(228.99998, 136.99998)
+rotation = -0.40558925
+
+[node name="Control" type="Control" parent="." unique_id=1168270116]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme = ExtResource("5_lgr22")
+metadata/_edit_lock_ = true
+
+[node name="RoundTable" type="PanelContainer" parent="Control" unique_id=1707730471]
+z_index = -10
+layout_mode = 0
+offset_left = 240.0
+offset_top = 135.0
+offset_right = 666.667
+offset_bottom = 375.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_oxdc4")
+
+[node name="Design" type="Panel" parent="Control/RoundTable" unique_id=1128296640]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ptkwr")
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/RoundTable" unique_id=1254750509]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/RoundTable/MarginContainer" unique_id=1246642924]
+layout_mode = 2
+mouse_filter = 2
+text = "asdsad"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Control" unique_id=1245407630]
+layout_mode = 0
+offset_right = 214.0
+offset_bottom = 40.0
+
+[node name="RhythmLane" type="Control" parent="Control" unique_id=559066242]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -426.0
+offset_top = -74.0
+offset_right = 426.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("7_lane")
+
+[node name="Background" type="Panel" parent="Control/RhythmLane" unique_id=1288505914]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 0
+anchor_right = 1.0
+offset_top = 18.0
+offset_bottom = 50.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_ptkwr")
+
+[node name="PlayerMark" type="Panel" parent="Control/RhythmLane" unique_id=1507007005]
+visible = false
+z_index = 2
+custom_minimum_size = Vector2(12, 42)
+layout_mode = 0
+offset_top = 8.0
+offset_right = 12.0
+offset_bottom = 50.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_lgr22")
+
+[node name="LeaderMarker" type="Panel" parent="Control/RhythmLane" unique_id=1873091880]
+z_index = 2
+custom_minimum_size = Vector2(12, 42)
+layout_mode = 0
+offset_top = 8.0
+offset_right = 12.0
+offset_bottom = 50.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_wkp8b")
+
+[node name="StepPlots" type="Control" parent="Control/RhythmLane" unique_id=125162019]
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="EmoteCapture" parent="Control/RhythmLane" unique_id=1766287619 instance=ExtResource("8_capture")]
+
+[node name="Keyboard" type="MarginContainer" parent="Control" unique_id=1684976846]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 0
+offset_left = -11.0
+offset_top = 248.0
+offset_right = 158.0
+offset_bottom = 520.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+offset_transform_enabled = true
+offset_transform_scale = Vector2(0.5, 0.5)
+offset_transform_visual_only = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Keyboard" unique_id=2080882529]
+layout_mode = 2
+theme_override_constants/separation = -12
+
+[node name="key1" type="HBoxContainer" parent="Control/Keyboard/VBoxContainer" unique_id=2029810147]
+layout_mode = 2
+
+[node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key1" unique_id=474741326]
+layout_mode = 2
+texture = ExtResource("6_5vvyt")
+stretch_mode = 2
+
+[node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key1" unique_id=2037705529]
+layout_mode = 2
+text = "Hands Up"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="key2" type="HBoxContainer" parent="Control/Keyboard/VBoxContainer" unique_id=1263672609]
+layout_mode = 2
+
+[node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key2" unique_id=1796915310]
+layout_mode = 2
+texture = ExtResource("7_c6i3y")
+stretch_mode = 2
+
+[node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key2" unique_id=304013649]
+layout_mode = 2
+text = "Peace"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="key3" type="HBoxContainer" parent="Control/Keyboard/VBoxContainer" unique_id=1430157708]
+layout_mode = 2
+
+[node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key3" unique_id=1235972595]
+layout_mode = 2
+texture = ExtResource("8_c2ibq")
+stretch_mode = 2
+
+[node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key3" unique_id=428920876]
+layout_mode = 2
+text = "Clap"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="key4" type="HBoxContainer" parent="Control/Keyboard/VBoxContainer" unique_id=1131507555]
+layout_mode = 2
+
+[node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key4" unique_id=790979245]
+layout_mode = 2
+texture = ExtResource("9_j4qnp")
+stretch_mode = 2
+
+[node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key4" unique_id=2112568159]
+layout_mode = 2
+text = "Rock"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="key5" type="HBoxContainer" parent="Control/Keyboard/VBoxContainer" unique_id=1707305852]
+layout_mode = 2
+
+[node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key5" unique_id=637895963]
+layout_mode = 2
+texture = ExtResource("10_fpfj3")
+stretch_mode = 2
+
+[node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key5" unique_id=639974431]
+layout_mode = 2
+text = "Point"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+vertical_alignment = 1

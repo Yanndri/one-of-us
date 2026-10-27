@@ -1,0 +1,6 @@
+[gd_resource type="Theme" format=3 uid="uid://disxpgqeuwt71"]
+
+[ext_resource type="FontFile" uid="uid://jylnv5isuq6j" path="res://assets/ADELIA.otf" id="1_rjgu6"]
+
+[resource]
+RichTextLabel/fonts/normal_font = ExtResource("1_rjgu6")
