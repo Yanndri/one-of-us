@@ -15,6 +15,10 @@ run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GlobalAudio="*res://scripts/global_audio.gd"
+
 [display]
 
 window/size/viewport_width=960
@@ -29,6 +33,7 @@ window/stretch/aspect="expand"
 Enemy=""
 Leader=""
 Player=""
+Friend=""
 
 [input]
 

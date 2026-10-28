@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ileouwcpaf7b"
-path.s3tc="res://.godot/imported/face_c.png-3dae841ce76b4d0eff9b6671b9a7586a.s3tc.ctex"
+path="res://.godot/imported/face_c.png-3dae841ce76b4d0eff9b6671b9a7586a.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://assets/Kenney_Shapes/PNG/Default/face_c.png"
-dest_files=["res://.godot/imported/face_c.png-3dae841ce76b4d0eff9b6671b9a7586a.s3tc.ctex"]
+dest_files=["res://.godot/imported/face_c.png-3dae841ce76b4d0eff9b6671b9a7586a.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

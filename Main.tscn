@@ -5,13 +5,18 @@
 [ext_resource type="Theme" uid="uid://disxpgqeuwt71" path="res://themes/main_theme.tres" id="5_lgr22"]
 [ext_resource type="PackedScene" uid="uid://bvpvx7hri8xm6" path="res://scenes/2dScenes/player.tscn" id="5_player"]
 [ext_resource type="Texture2D" uid="uid://das1eervkoleo" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_w.svg" id="6_5vvyt"]
-[ext_resource type="Script" uid="uid://ys10aak3n2ed" path="res://scenes/2dScenes/round_controller.gd" id="6_round"]
+[ext_resource type="Script" uid="uid://ys10aak3n2ed" path="res://scripts/round_controller.gd" id="6_round"]
 [ext_resource type="Texture2D" uid="uid://cct0ni4t8oj0" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_a.svg" id="7_c6i3y"]
-[ext_resource type="Script" uid="uid://nt853iew3xan" path="res://scenes/2dScenes/rhythm_lane.gd" id="7_lane"]
+[ext_resource type="Script" uid="uid://nt853iew3xan" path="res://scripts/rhythm_lane.gd" id="7_lane"]
 [ext_resource type="Texture2D" uid="uid://dfccy13mt6gjd" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_s.svg" id="8_c2ibq"]
 [ext_resource type="PackedScene" path="res://scenes/2dScenes/emote_capture.tscn" id="8_capture"]
 [ext_resource type="Texture2D" uid="uid://c3tnqxjs224gl" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_d.svg" id="9_j4qnp"]
 [ext_resource type="Texture2D" uid="uid://cfv0xucxrhhcy" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/mouse_left.svg" id="10_fpfj3"]
+[ext_resource type="PackedScene" uid="uid://cump0g5cxd14k" path="res://scenes/2dScenes/friend.tscn" id="13_c6i3y"]
+[ext_resource type="Texture2D" uid="uid://b6sv8rcaucb7r" path="res://assets/ui/leader_gesture_preview.png" id="14_leader_preview"]
+[ext_resource type="Texture2D" uid="uid://cxe36xjc0t3sb" path="res://assets/ui/player_gesture_preview.png" id="15_player_preview"]
+[ext_resource type="Script" uid="uid://c8sc624nn5xp2" path="res://scripts/dialogue.gd" id="16_dialogue"]
+[ext_resource type="Script" uid="uid://efsq84sjtwpg" path="res://scripts/messages.gd" id="17_messages"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oxdc4"]
 
@@ -55,6 +60,8 @@ gradient = SubResource("Gradient_trn2v")
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wkp8b"]
 texture = SubResource("GradientTexture2D_03owx")
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ptkwr"]
+
 [node name="Node2D" type="Node2D" unique_id=540957774]
 
 [node name="RoundController" type="Node" parent="." unique_id=1906648030]
@@ -62,11 +69,12 @@ script = ExtResource("6_round")
 
 [node name="Player" parent="." unique_id=909801526 instance=ExtResource("5_player")]
 position = Vector2(465, 84)
+mistake_face_duration = 0.3
 
 [node name="Leader" parent="." unique_id=1348250996 instance=ExtResource("4_cm0pq")]
 position = Vector2(849, 245)
 
-[node name="NPC" parent="." unique_id=270160221 instance=ExtResource("1_glv2v")]
+[node name="NPC4" parent="." unique_id=270160221 instance=ExtResource("1_glv2v")]
 position = Vector2(241, 332)
 rotation = 0.19566298
 
@@ -74,17 +82,13 @@ rotation = 0.19566298
 position = Vector2(661.99994, 338.00003)
 rotation = -0.187199
 
-[node name="NPC5" parent="." unique_id=1352080746 instance=ExtResource("1_glv2v")]
+[node name="NPC3" parent="." unique_id=1352080746 instance=ExtResource("1_glv2v")]
 position = Vector2(460.00003, 399)
 rotation = 0.0201395
 
-[node name="NPC3" parent="." unique_id=1092891593 instance=ExtResource("1_glv2v")]
+[node name="NPC1" parent="." unique_id=1092891593 instance=ExtResource("1_glv2v")]
 position = Vector2(684, 139.00002)
 rotation = 0.4106164
-
-[node name="NPC4" parent="." unique_id=1348640060 instance=ExtResource("1_glv2v")]
-position = Vector2(228.99998, 136.99998)
-rotation = -0.40558925
 
 [node name="Control" type="Control" parent="." unique_id=1168270116]
 layout_mode = 3
@@ -125,6 +129,7 @@ theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
 [node name="RichTextLabel" type="RichTextLabel" parent="Control/RoundTable/MarginContainer" unique_id=1246642924]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 text = "asdsad"
@@ -185,6 +190,78 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_wkp8b")
 [node name="StepPlots" type="Control" parent="Control/RhythmLane" unique_id=125162019]
 anchors_preset = 0
 mouse_filter = 2
+
+[node name="PlayerPlots" type="Control" parent="Control/RhythmLane" unique_id=2021825204]
+z_index = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="LeaderStepTemplate" type="Control" parent="Control/RhythmLane" unique_id=349181356]
+anchors_preset = 0
+offset_left = 111.0
+offset_right = 111.0
+mouse_filter = 2
+
+[node name="Emote" type="TextureRect" parent="Control/RhythmLane/LeaderStepTemplate" unique_id=685454386]
+texture_filter = 2
+layout_mode = 0
+offset_left = -32.0
+offset_top = -42.0
+offset_right = 32.0
+offset_bottom = 22.0
+mouse_filter = 2
+texture = ExtResource("14_leader_preview")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Tick" type="ColorRect" parent="Control/RhythmLane/LeaderStepTemplate" unique_id=433957542]
+layout_mode = 0
+offset_left = -2.0
+offset_top = 18.0
+offset_right = 2.0
+offset_bottom = 50.0
+mouse_filter = 2
+color = Color(0.38, 0, 0.65, 1)
+
+[node name="Action" type="RichTextLabel" parent="Control/RhythmLane/LeaderStepTemplate" unique_id=1335177020]
+layout_mode = 0
+offset_left = -40.0
+offset_top = 50.0
+offset_right = 40.0
+offset_bottom = 73.0
+text = "CLAP"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="PlayerStepTemplate" type="Control" parent="Control/RhythmLane" unique_id=699194712]
+z_index = 1
+anchors_preset = 0
+offset_left = 111.0
+offset_top = 34.0
+offset_right = 111.0
+offset_bottom = 34.0
+mouse_filter = 2
+
+[node name="Emote" type="TextureRect" parent="Control/RhythmLane/PlayerStepTemplate" unique_id=482893037]
+texture_filter = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -36.0
+offset_right = 32.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(16, 16)
+mouse_filter = 2
+texture = ExtResource("15_player_preview")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="EmoteCapture" parent="Control/RhythmLane" unique_id=1766287619 instance=ExtResource("8_capture")]
 
@@ -284,3 +361,92 @@ fit_content = true
 scroll_active = false
 autowrap_mode = 0
 vertical_alignment = 1
+
+[node name="Dialogue" type="PanelContainer" parent="Control" unique_id=196455975]
+unique_name_in_owner = true
+z_index = -10
+layout_mode = 0
+offset_left = 275.0
+offset_top = 165.0
+offset_right = 616.0
+offset_bottom = 334.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ptkwr")
+script = ExtResource("16_dialogue")
+characters_per_second = 24.0
+group_colors = Dictionary[StringName, Color]({
+&"Enemy": Color(0.6431373, 0.3529412, 0.9372549, 1),
+&"Friend": Color(1, 0.6156863, 0.30980393, 1),
+&"Leader": Color(0.6431373, 0.3529412, 0.9372549, 1),
+&"Player": Color(0.4509804, 0.56078434, 0.9137255, 1)
+})
+
+[node name="Speakers" type="Node2D" parent="Control/Dialogue" unique_id=1791642542]
+
+[node name="SpeechLeader" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=480109111]
+visible = false
+position = Vector2(341, 80)
+rotation = 1.5707964
+polygon = PackedVector2Array(3, -164, -19, 13, 42, 11)
+
+[node name="SpeechPlayer1" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=287189688]
+visible = false
+position = Vector2(186, -7)
+polygon = PackedVector2Array(-2, -26, -19, 13, 12, 14)
+
+[node name="SpeechNPC1" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=1813598812]
+visible = false
+position = Vector2(326, 27.000015)
+rotation = 0.8656204
+polygon = PackedVector2Array(-2, -26, -19, 13, 12, 14)
+
+[node name="SpeechNPC2" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=1589264969]
+visible = false
+position = Vector2(322, 151)
+rotation = 2.3130603
+polygon = PackedVector2Array(-2, -26, -19, 13, 12, 14)
+
+[node name="SpeechNPC3" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=976464674]
+visible = false
+position = Vector2(185, 170)
+rotation = 3.138798
+polygon = PackedVector2Array(-2, -26, -19, 13, 12, 14)
+
+[node name="SpeechNPC4" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=236836162]
+visible = false
+position = Vector2(-1.5258789e-05, 108.99999)
+rotation = 3.9761658
+polygon = PackedVector2Array(-2, -26, -19, 13, 12, 14)
+
+[node name="SpeechFriend1" type="Polygon2D" parent="Control/Dialogue/Speakers" unique_id=1835187577]
+visible = false
+position = Vector2(31.999985, 4.9999924)
+rotation = 5.650901
+polygon = PackedVector2Array(-2, -26, -19, 13, 12, 14)
+
+[node name="SpeechBodyDesign" type="Polygon2D" parent="Control/Dialogue" unique_id=246683766]
+position = Vector2(185, 75)
+polygon = PackedVector2Array(-124, -74, -163, -50, -184, 20, -138, 82, 51, 94, 119, 79, 146, 57, 156, -13, 107, -69)
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/Dialogue" unique_id=1830622357]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 12
+
+[node name="DialogueText" type="RichTextLabel" parent="Control/Dialogue/MarginContainer" unique_id=407048779]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.4509804, 0.5568628, 0.9137255, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Messages" type="Node" parent="Control/Dialogue" unique_id=470843434]
+unique_name_in_owner = true
+script = ExtResource("17_messages")
+
+[node name="Friend" parent="." unique_id=1255160976 instance=ExtResource("13_c6i3y")]
+position = Vector2(261, 107.00001)
+rotation = -0.322182

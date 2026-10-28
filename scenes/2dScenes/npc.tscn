@@ -1,38 +1,38 @@
 [gd_scene format=3 uid="uid://c7i0tyogfuh5x"]
 
 [ext_resource type="PackedScene" uid="uid://cbb533vdh4aru" path="res://scenes/2dScenes/body_template.tscn" id="1_rv78h"]
-[ext_resource type="Texture2D" uid="uid://q4dmh2ws351l" path="res://assets/Kenney_Shapes/PNG/Default/green_body_square.png" id="2_7n8xq"]
-[ext_resource type="Texture2D" uid="uid://bi1fi5pjosoja" path="res://assets/Kenney_Shapes/PNG/Default/green_hand_open.png" id="3_4wlns"]
+[ext_resource type="Texture2D" uid="uid://4x2x8j5md6mr" path="res://assets/Kenney_Shapes/PNG/Default/purple_body_square.png" id="2_4nto7"]
 [ext_resource type="Texture2D" uid="uid://bnrxben7nexji" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="3_7n8xq"]
-[ext_resource type="Texture2D" uid="uid://b3khje53wtr1r" path="res://assets/Kenney_Shapes/PNG/Default/green_hand_closed.png" id="pose_closed"]
-[ext_resource type="Texture2D" uid="uid://be1t66obv8k3a" path="res://assets/Kenney_Shapes/PNG/Default/green_hand_peace.png" id="pose_peace"]
-[ext_resource type="Texture2D" uid="uid://cw1u8utw6ben8" path="res://assets/Kenney_Shapes/PNG/Default/green_hand_point.png" id="pose_point"]
-[ext_resource type="Texture2D" uid="uid://bf415g7iumquv" path="res://assets/Kenney_Shapes/PNG/Default/green_hand_rock.png" id="pose_rock"]
-[ext_resource type="Texture2D" uid="uid://6xnxlf7g7uac" path="res://assets/Kenney_Shapes/PNG/Default/green_hand_thumb.png" id="pose_thumb"]
+[ext_resource type="Texture2D" uid="uid://cnc7sffr5afsd" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_open.png" id="4_lrat3"]
+[ext_resource type="Texture2D" uid="uid://3iipmvkycahn" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_point.png" id="5_cjnyl"]
+[ext_resource type="Texture2D" uid="uid://uaymrhvmlr38" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_peace.png" id="6_4gb1s"]
+[ext_resource type="Texture2D" uid="uid://qj0hccek07bs" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_rock.png" id="7_2tklq"]
+[ext_resource type="Texture2D" uid="uid://doldl3f554lo1" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_thumb.png" id="8_na3k5"]
+[ext_resource type="Texture2D" uid="uid://dxu1fa3r01f7k" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_closed.png" id="9_dokou"]
 
 [node name="NPC" unique_id=909801526 groups=["Enemy"] instance=ExtResource("1_rv78h")]
 
 [node name="FaceSprites" parent="." index="0" unique_id=2042377121]
-body_sprite = ExtResource("2_7n8xq")
+body_sprite = ExtResource("2_4nto7")
 face_sprite = ExtResource("3_7n8xq")
-wavehand_sprite = ExtResource("3_4wlns")
-pointhand_sprite = ExtResource("pose_point")
-peacehand_sprite = ExtResource("pose_peace")
-rocknrollhand_sprite = ExtResource("pose_rock")
-thumbsuphand_sprite = ExtResource("pose_thumb")
-fisthand_sprite = ExtResource("pose_closed")
+wavehand_sprite = ExtResource("4_lrat3")
+pointhand_sprite = ExtResource("5_cjnyl")
+peacehand_sprite = ExtResource("6_4gb1s")
+rocknrollhand_sprite = ExtResource("7_2tklq")
+thumbsuphand_sprite = ExtResource("8_na3k5")
+fisthand_sprite = ExtResource("9_dokou")
 
 [node name="Body" parent="." index="2" unique_id=171704627]
-texture = ExtResource("2_7n8xq")
+texture = ExtResource("2_4nto7")
 
 [node name="Face" parent="." index="3" unique_id=2004765950]
 texture = ExtResource("3_7n8xq")
 
 [node name="LeftHand" parent="LeftArmPivot" parent_id_path=PackedInt32Array(257578237) index="0" unique_id=135106367]
-texture = ExtResource("3_4wlns")
+texture = ExtResource("4_lrat3")
 
 [node name="RightHand" parent="RightArmPivot" parent_id_path=PackedInt32Array(1619714027) index="0" unique_id=1253301101]
-texture = ExtResource("3_4wlns")
+texture = ExtResource("4_lrat3")
 
 [node name="PointHand" parent="Pointing" parent_id_path=PackedInt32Array(703857854) index="0" unique_id=811569203]
-texture = ExtResource("pose_point")
+texture = ExtResource("5_cjnyl")

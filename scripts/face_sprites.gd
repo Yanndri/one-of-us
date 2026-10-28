@@ -29,6 +29,10 @@ extends Node
 	set(value):
 		sadfacelevel4_sprite = value
 		_queue_refresh()
+@export var smileface_sprite: Texture2D:
+	set(value):
+		smileface_sprite = value
+		_queue_refresh()
 @export var happyface_sprite: Texture2D:
 	set(value):
 		happyface_sprite = value
@@ -36,6 +40,22 @@ extends Node
 @export var angryface_sprite: Texture2D:
 	set(value):
 		angryface_sprite = value
+		_queue_refresh()
+@export var smugface_sprite: Texture2D:
+	set(value):
+		smugface_sprite = value
+		_queue_refresh()
+@export var smugface2_sprite: Texture2D:
+	set(value):
+		smugface2_sprite = value
+		_queue_refresh()
+@export var smugface3_sprite: Texture2D:
+	set(value):
+		smugface3_sprite = value
+		_queue_refresh()
+@export var evilface_sprite: Texture2D:
+	set(value):
+		evilface_sprite = value
 		_queue_refresh()
 @export var wavehand_sprite: Texture2D:
 	set(value):

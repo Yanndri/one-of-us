@@ -12,12 +12,17 @@
 [ext_resource type="Texture2D" uid="uid://48iqbyh0j0pw" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_rock.png" id="7_mj610"]
 [ext_resource type="Texture2D" uid="uid://xt2obaa37l5r" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_thumb.png" id="8_amm4j"]
 [ext_resource type="Texture2D" uid="uid://brbju41cih831" path="res://assets/Kenney_Shapes/PNG/Default/face_j.png" id="8_ot5sf"]
+[ext_resource type="Texture2D" uid="uid://ileouwcpaf7b" path="res://assets/Kenney_Shapes/PNG/Default/face_c.png" id="9_fpxqp"]
 [ext_resource type="Texture2D" uid="uid://vcqk4y1h1qfg" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_closed.png" id="9_oqhh6"]
 [ext_resource type="Texture2D" uid="uid://cqop5axc1815d" path="res://assets/Kenney_Shapes/PNG/Default/face_l.png" id="9_y0m07"]
-[ext_resource type="Script" uid="uid://cslcny2bk7pjw" path="res://scenes/2dScenes/face_sprites.gd" id="10_appearance"]
+[ext_resource type="Script" uid="uid://cslcny2bk7pjw" path="res://scripts/face_sprites.gd" id="10_appearance"]
 [ext_resource type="Texture2D" uid="uid://buu68q6awdcpf" path="res://assets/Kenney_Shapes/PNG/Default/face_g.png" id="10_rbvpj"]
+[ext_resource type="Texture2D" uid="uid://bvl256n1r3nq4" path="res://assets/Kenney_Shapes/PNG/Default/face_h.png" id="11_k5tj1"]
 [ext_resource type="AudioStream" uid="uid://dp1kbj63hyxsi" path="res://assets/music/soundsgoodmusic-clap-375693.mp3" id="11_mj610"]
 [ext_resource type="AudioStream" uid="uid://de6g5khkvaxvc" path="res://assets/music/phoenix_connection_brazil-slow-wind-sound-effect-108401.mp3" id="12_amm4j"]
+[ext_resource type="Texture2D" uid="uid://itmogmsk2rwb" path="res://assets/Kenney_Shapes/PNG/Default/face_e.png" id="12_ot5sf"]
+[ext_resource type="Texture2D" uid="uid://qnvsd2x1nagw" path="res://assets/Kenney_Shapes/PNG/Default/face_d.png" id="13_y0m07"]
+[ext_resource type="Texture2D" uid="uid://bnrxben7nexji" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="14_rbvpj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ptkwr"]
 radius = 42.0119
@@ -1000,15 +1005,19 @@ sadfacelevel1_sprite = ExtResource("5_cnv0j")
 sadfacelevel2_sprite = ExtResource("4_amm4j")
 sadfacelevel3_sprite = ExtResource("7_k5tj1")
 sadfacelevel4_sprite = ExtResource("8_ot5sf")
+smileface_sprite = ExtResource("9_fpxqp")
 happyface_sprite = ExtResource("9_y0m07")
 angryface_sprite = ExtResource("10_rbvpj")
+smugface_sprite = ExtResource("11_k5tj1")
+smugface2_sprite = ExtResource("12_ot5sf")
+smugface3_sprite = ExtResource("13_y0m07")
+evilface_sprite = ExtResource("14_rbvpj")
 wavehand_sprite = ExtResource("4_aqmxk")
 pointhand_sprite = ExtResource("5_it457")
 peacehand_sprite = ExtResource("6_8fci4")
 rocknrollhand_sprite = ExtResource("7_mj610")
 thumbsuphand_sprite = ExtResource("8_amm4j")
 fisthand_sprite = ExtResource("9_oqhh6")
-face_expression = null
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1856440202]
 

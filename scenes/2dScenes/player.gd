@@ -13,6 +13,8 @@ var free_gesturing_enabled: bool = false
 
 var pointing_tween: Tween
 var _mistake_face_tween: Tween
+# Prevent a new gesture or mouse point from interrupting the current gesture.
+var _gesture_locked: bool = false
 
 @onready var pointing: Node2D = $Pointing
 @onready var pointing_hand: Sprite2D = $Pointing/PointHand
@@ -21,6 +23,7 @@ var _mistake_face_tween: Tween
 
 
 func _ready() -> void:
+	animation_player.animation_finished.connect(_on_gesture_finished)
 	# Aim around the body center, with the finger aligned to local +X.
 	pointing.position = Vector2.ZERO
 	pointing_hand.position = Vector2(76.0, 0.0)
@@ -32,8 +35,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if rhythm_input_enabled or free_gesturing_enabled:
 		for action in [&"hands_up", &"peace", &"clap", &"rock"]:
 			if event.is_action_pressed(action):
-				perform_rhythm_action(action)
-				if rhythm_input_enabled:
+				var accepted := perform_rhythm_action(action)
+				if accepted and rhythm_input_enabled:
 					rhythm_action.emit(action)
 				get_viewport().set_input_as_handled()
 				return
@@ -44,7 +47,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-func perform_rhythm_action(action: StringName) -> void:
+func perform_rhythm_action(action: StringName) -> bool:
+	# A round/phase reset can always return the player to rest.
+	# Other inputs are ignored until the gesture's animation finishes.
+	if action != &"rest" and _gesture_locked:
+		return false
+	_gesture_locked = action != &"rest"
 	if pointing_tween and pointing_tween.is_valid():
 		pointing_tween.kill()
 	# Restore the open hands when changing from a pointing pose.
@@ -53,6 +61,11 @@ func perform_rhythm_action(action: StringName) -> void:
 	animation_player.stop()
 	animation_player.play("default" if action == &"rest" else action)
 	animation_player.advance(0.0)
+	return true
+
+
+func _on_gesture_finished(_animation: StringName) -> void:
+	_gesture_locked = false
 
 
 # A mistake briefly shows level 2 as a shocked reaction, then restores the normal face.
@@ -75,6 +88,8 @@ func reset_gesture_feedback() -> void:
 
 # Mouse pointing is separate from rhythm input and works after the response.
 func point_at(target: Vector2) -> void:
+	if _gesture_locked:
+		return
 	if pointing.global_position.distance_squared_to(target) < 0.001:
 		return
 	animation_player.play("pointing")
