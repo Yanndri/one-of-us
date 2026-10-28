@@ -12,7 +12,7 @@ extends Node
 	set(value):
 		face_sprite = value
 		_queue_refresh()
-# No automatic pointing-count selection yet. Level 2 also supplies mistake feedback.
+# Player pressure uses these levels; level 2 also supplies brief mistake feedback.
 @export var sadfacelevel1_sprite: Texture2D:
 	set(value):
 		sadfacelevel1_sprite = value
@@ -89,7 +89,7 @@ extends Node
 		if is_inside_tree():
 			_apply_hand_texture()
 
-@export_enum("default", "happy", "angry", "sad_level_2") var face_expression: String = "default":
+@export_enum("default", "happy", "angry", "smile", "sad_level_1", "sad_level_2", "sad_level_3", "sad_level_4", "smug", "smug_2", "smug_3", "evil") var face_expression: String = "default":
 	set(value):
 		face_expression = value
 		if is_inside_tree():
@@ -97,6 +97,8 @@ extends Node
 
 # Coalesces Inspector edits into one refresh after all sibling nodes exist.
 var _refresh_queued: bool = false
+# The face used by "default" can change without replacing the normal face asset.
+var default_face_expression: StringName = &"default"
 
 
 func _ready() -> void:
@@ -130,18 +132,34 @@ func set_face_expression(expression: StringName) -> void:
 	face_expression = String(expression)
 
 
+func set_default_face_expression(expression: StringName) -> void:
+	# Active happy/shocked/dialogue expressions remain visible until they reset.
+	default_face_expression = expression
+	if is_inside_tree():
+		_apply_face_texture()
+
+
 func _apply_face_texture() -> void:
-	var texture := face_sprite
-	match face_expression:
-		"happy":
-			if happyface_sprite != null:
-				texture = happyface_sprite
-		"angry":
-			if angryface_sprite != null:
-				texture = angryface_sprite
-		"sad_level_2":
-			if sadfacelevel2_sprite != null:
-				texture = sadfacelevel2_sprite
+	# Every assigned face alternative is available to both dialogue and the editor.
+	var textures := {
+		"default": face_sprite,
+		"happy": happyface_sprite,
+		"angry": angryface_sprite,
+		"smile": smileface_sprite,
+		"sad_level_1": sadfacelevel1_sprite,
+		"sad_level_2": sadfacelevel2_sprite,
+		"sad_level_3": sadfacelevel3_sprite,
+		"sad_level_4": sadfacelevel4_sprite,
+		"smug": smugface_sprite,
+		"smug_2": smugface2_sprite,
+		"smug_3": smugface3_sprite,
+		"evil": evilface_sprite,
+	}
+	var expression := String(default_face_expression) if face_expression == "default" else face_expression
+	var texture: Texture2D = textures.get(expression)
+	# Unassigned alternatives and unknown names keep the normal face visible.
+	if texture == null:
+		texture = face_sprite
 	_apply_texture(^"../Face", texture)
 
 

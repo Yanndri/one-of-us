@@ -3,35 +3,55 @@ extends Node
 # All messages live in this one dictionary, listed in round order.
 # Edit text, speaker, reading_time, and optional wait_time here.
 # wait_time pauses an awaiting caller, starting when the line is shown.
+# Optional face: default, happy, angry, sad_level_2.
+# face_time is seconds from line start; omit it to keep the face until the line ends.
+
+#await dialogue.play_line(&"NPCAccusation", -1.0, speaker)
 var messages: Dictionary = {
 	# Friend introduces the leader's demonstration.
 	&"Introduction": {
-		"text": "Watch the leader's gestures and their timing.",
+		"text": "Watch him first. Then we'll copy his moves together.",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.0,
 	},
-	# Countdown runs in order using each wait_time. 4 is only used with Count In Beats = 4.
-	#&"Countdown4": {"text": "4...", "speaker": &"Leader", "reading_time": 1.0, "wait_time": 1.0},
-	#&"Countdown3": {"text": "3...", "speaker": &"Leader", "reading_time": 1.0, "wait_time": 1.0},
-	#&"Countdown2": {"text": "2...", "speaker": &"Leader", "reading_time": 1.0, "wait_time": 1.0},
-	#&"Countdown1": {"text": "1...", "speaker": &"Leader", "reading_time": 1.0, "wait_time": 1.0},
 	&"YourTurn": {
 		"text": "Your turn!",
 		"speaker": &"Leader",
-		"reading_time": 4.2,
-		"wait_time": 5.0,
+		"reading_time": 1.2,
+		"wait_time": 2.0,
 	},
 	# Only one of these outcomes plays after the response.
 	&"Success": {
-		"text": "You matched the sequence. Well done!",
+		"text": "See? You've got this.",
 		"speaker": &"Friend1",
 		"reading_time": 3.0,
+		"face": &"smile",
+		"face_time": 2.0,
+	},
+	# Failure exchange: the pointing NPC speaks, then Friend defends the player.
+	# Gameplay replaces NPC1 with whichever NPC is actually pointing.
+	&"NPCAccusation": {
+		"text": "Hey you're messing up!",
+		"speaker": &"NPC1",
+		"reading_time": 2.0,
+		"wait_time": 3.5,
+		"face": &"angry",
+		"face_time": 3.0,
+	},
+	&"FriendDefense": {
+		"text": "Hey he's new don't shame him!",
+		"speaker": &"Friend1",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+		"face": &"angry",
+		"face_time": 3.2,
 	},
 	&"TryAgain": {
-		"text": "Try matching the gestures to the beat.",
+		"text": "It's okay. Watch the timing - we'll try again.",
 		"speaker": &"Friend1",
 		"reading_time": 3.0,
+		"wait_time": 3.5,
 	},
 }
 

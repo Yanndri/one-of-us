@@ -15,6 +15,7 @@ var pointing_tween: Tween
 var _mistake_face_tween: Tween
 # Prevent a new gesture or mouse point from interrupting the current gesture.
 var _gesture_locked: bool = false
+var sadness_level: int = 0
 
 @onready var pointing: Node2D = $Pointing
 @onready var pointing_hand: Sprite2D = $Pointing/PointHand
@@ -43,8 +44,29 @@ func _unhandled_input(event: InputEvent) -> void:
 		if rhythm_input_enabled:
 			return
 	if event.is_action_pressed(&"point"):
-		point_at(get_global_mouse_position())
+		if event is InputEventMouseButton:
+			_point_at_clicked_character(event.position)
 		get_viewport().set_input_as_handled()
+
+
+func _point_at_clicked_character(viewport_position: Vector2) -> void:
+	if rhythm_input_enabled or _gesture_locked:
+		return
+	# Pick the target first, then update every outline from that one selection.
+	# A click on empty space or self leaves the target empty and clears all outlines.
+	var target_selection: Node = null
+	for selection in get_tree().get_nodes_in_group(&"character_selection"):
+		var character := selection.get_parent() as Node2D
+		if character == self or selection.get_viewport() != get_viewport():
+			continue
+		if selection.hit_character(viewport_position):
+			target_selection = selection
+			break
+	for selection in get_tree().get_nodes_in_group(&"character_selection"):
+		if selection.get_viewport() == get_viewport():
+			selection.set_selected(selection == target_selection)
+	if target_selection != null:
+		point_at(target_selection.get_parent().global_position)
 
 
 func perform_rhythm_action(action: StringName) -> bool:
@@ -68,7 +90,16 @@ func _on_gesture_finished(_animation: StringName) -> void:
 	_gesture_locked = false
 
 
-# A mistake briefly shows level 2 as a shocked reaction, then restores the normal face.
+# More accusing NPCs make the player's resting face progressively sadder.
+func set_pointing_pressure(pointing_count: int, total_npcs: int) -> void:
+	sadness_level = 0
+	if pointing_count > 0 and total_npcs > 0:
+		sadness_level = clampi(ceili(float(pointing_count) / total_npcs * 4.0), 1, 4)
+	var expression := &"default" if sadness_level == 0 else StringName("sad_level_%d" % sadness_level)
+	face_sprites.set_default_face_expression(expression)
+
+
+# A mistake briefly shows level 2 as a shocked reaction, then restores the resting face.
 # New feedback cancels the old reset so it cannot erase a newer happy expression.
 func show_gesture_feedback(correct: bool) -> void:
 	reset_gesture_feedback()

@@ -2,7 +2,21 @@
 
 [ext_resource type="PackedScene" uid="uid://cbb533vdh4aru" path="res://scenes/2dScenes/body_template.tscn" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bopy3akoprg4b" path="res://scenes/2dScenes/player.gd" id="2_player"]
+[ext_resource type="Theme" uid="uid://disxpgqeuwt71" path="res://themes/main_theme.tres" id="3_mlyub"]
 
 [node name="Player" unique_id=909801526 groups=["Player"] instance=ExtResource("1_3vyb7")]
 script = ExtResource("2_player")
 pointing_tween_duration = 0.2
+mistake_face_duration = 0.3
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." index="10" unique_id=1613581147]
+offset_left = -31.0
+offset_top = -65.0
+offset_right = 39.0
+offset_bottom = -41.0
+rotation = 0.20694119
+theme = ExtResource("3_mlyub")
+bbcode_enabled = true
+text = "You"
+fit_content = true
+horizontal_alignment = 1

@@ -31,6 +31,19 @@ func show_leader(progress: float) -> void:
 	_layout_marks()
 
 
+func reset_round() -> void:
+	# Reuse captured gesture images, but remove the previous attempt's marks.
+	for plots in [step_plots, player_plots]:
+		for step in plots.get_children():
+			plots.remove_child(step)
+			step.queue_free()
+	leader_progress = 0.0
+	player_progress = 0.0
+	leader_marker.show()
+	player_marker.hide()
+	_layout_marks()
+
+
 func prepare_icons() -> void:
 	# The offscreen character is rendered once per pose, then its images are reused.
 	pose_textures = await $EmoteCapture.capture_poses()
@@ -44,7 +57,7 @@ func show_player(progress: float) -> void:
 	_layout_marks()
 
 
-func plot_step(index: int, progress: float, action: StringName) -> void:
+func plot_step(index: int, progress: float, action: StringName, tick_thickness: float = 4.0) -> void:
 	# The template supplies the design; code only supplies timing and content.
 	if step_plots.has_node("Step%d" % index):
 		return
@@ -55,6 +68,11 @@ func plot_step(index: int, progress: float, action: StringName) -> void:
 	step.show()
 	step.get_node("Emote").texture = pose_textures.get(action)
 	step.get_node("Action").text = str(action).replace("_", " ").to_upper()
+	# Per-gesture width comes from Level. Keep its center on the timing position.
+	var tick := step.get_node("Tick") as Control
+	var center_x := tick.position.x + tick.size.x * 0.5
+	tick.size.x = tick_thickness
+	tick.position.x = center_x - tick_thickness * 0.5
 	_layout_marks()
 
 

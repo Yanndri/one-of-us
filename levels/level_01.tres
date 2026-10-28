@@ -1,12 +1,16 @@
-[gd_resource type="Resource" load_steps=2 format=3]
+[gd_resource type="Resource" format=3 uid="uid://bum0oyfub815"]
 
-[ext_resource type="Script" path="res://scripts/rhythm_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://c6cqbprogj47s" path="res://scripts/rhythm_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://bd1euljevj8kn" path="res://scripts/rhythm_gesture.gd" id="2_gesture"]
+
+[sub_resource type="Resource" id="Gesture1"]
+resource_name = "Gesture1 - Clap"
+script = ExtResource("2_gesture")
+tick_thickness = 24.0
+position_percent = 75.0
 
 [resource]
 resource_name = "Level 1 - Clap"
 script = ExtResource("1_level")
-gestures = Array[StringName]([&"clap"])
-bpm = 60.0
-start_delay = 2.0
-count_in_beats = 3
-input_window = 0.15
+gestures = Array[ExtResource("2_gesture")]([SubResource("Gesture1")])
+bpm = 15.0

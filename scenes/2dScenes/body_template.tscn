@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cbb533vdh4aru"]
 
 [ext_resource type="Script" uid="uid://pw1w5pe1iiqt" path="res://scenes/2dScenes/body_template.gd" id="1_pjwan"]
+[ext_resource type="Script" path="res://scripts/character_selection.gd" id="selection_script"]
 [ext_resource type="Texture2D" uid="uid://defrg341onar8" path="res://assets/Kenney_Shapes/PNG/Default/blue_body_circle.png" id="2_quv6x"]
 [ext_resource type="Texture2D" uid="uid://dl17s66in1hwu" path="res://assets/Kenney_Shapes/PNG/Default/face_a.png" id="3_fb0rc"]
 [ext_resource type="Texture2D" uid="uid://cgvvrccgh25ci" path="res://assets/Kenney_Shapes/PNG/Default/face_i.png" id="4_amm4j"]
@@ -1067,3 +1068,6 @@ autoplay = &"default"
 [node name="IdleAnimation" type="AnimationPlayer" parent="." unique_id=858737038]
 libraries/ = SubResource("AnimationLibrary_p5esr")
 autoplay = &"idle"
+
+[node name="Selection" type="Node" parent="."]
+script = ExtResource("selection_script")

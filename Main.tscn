@@ -40,25 +40,21 @@ gradient = SubResource("Gradient_cm0pq")
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ptkwr"]
 texture = SubResource("GradientTexture2D_oxdc4")
 
-[sub_resource type="Gradient" id="Gradient_fos0i"]
-offsets = PackedFloat32Array(1)
-colors = PackedColorArray(1, 1, 0, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eq64n"]
+bg_color = Color(0.43529412, 0.5019608, 0.9137255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.57254905, 0.7490196, 0.9372549, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_3dxm6"]
-gradient = SubResource("Gradient_fos0i")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lgr22"]
-texture = SubResource("GradientTexture2D_3dxm6")
-
-[sub_resource type="Gradient" id="Gradient_trn2v"]
-offsets = PackedFloat32Array(1)
-colors = PackedColorArray(0.67058825, 0, 1, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_03owx"]
-gradient = SubResource("Gradient_trn2v")
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wkp8b"]
-texture = SubResource("GradientTexture2D_03owx")
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_igem8"]
+bg_color = Color(0.5708987, 0.30289242, 0.85540205, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.90692437, 0.65850776, 0.89135426, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ptkwr"]
 
@@ -69,7 +65,6 @@ script = ExtResource("6_round")
 
 [node name="Player" parent="." unique_id=909801526 instance=ExtResource("5_player")]
 position = Vector2(465, 84)
-mistake_face_duration = 0.3
 
 [node name="Leader" parent="." unique_id=1348250996 instance=ExtResource("4_cm0pq")]
 position = Vector2(849, 245)
@@ -120,28 +115,6 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ptkwr")
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/RoundTable" unique_id=1254750509]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="RichTextLabel" type="RichTextLabel" parent="Control/RoundTable/MarginContainer" unique_id=1246642924]
-visible = false
-layout_mode = 2
-mouse_filter = 2
-text = "asdsad"
-fit_content = true
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="TextureProgressBar" type="TextureProgressBar" parent="Control" unique_id=1245407630]
-layout_mode = 0
-offset_right = 214.0
-offset_bottom = 40.0
-
 [node name="RhythmLane" type="Control" parent="Control" unique_id=559066242]
 layout_mode = 1
 anchors_preset = 7
@@ -159,7 +132,8 @@ script = ExtResource("7_lane")
 
 [node name="Background" type="Panel" parent="Control/RhythmLane" unique_id=1288505914]
 custom_minimum_size = Vector2(0, 32)
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 10
 anchor_right = 1.0
 offset_top = 18.0
 offset_bottom = 50.0
@@ -167,7 +141,6 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_ptkwr")
 
 [node name="PlayerMark" type="Panel" parent="Control/RhythmLane" unique_id=1507007005]
-visible = false
 z_index = 2
 custom_minimum_size = Vector2(12, 42)
 layout_mode = 0
@@ -175,7 +148,7 @@ offset_top = 8.0
 offset_right = 12.0
 offset_bottom = 50.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_lgr22")
+theme_override_styles/panel = SubResource("StyleBoxFlat_eq64n")
 
 [node name="LeaderMarker" type="Panel" parent="Control/RhythmLane" unique_id=1873091880]
 z_index = 2
@@ -185,7 +158,7 @@ offset_top = 8.0
 offset_right = 12.0
 offset_bottom = 50.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_wkp8b")
+theme_override_styles/panel = SubResource("StyleBoxFlat_igem8")
 
 [node name="StepPlots" type="Control" parent="Control/RhythmLane" unique_id=125162019]
 anchors_preset = 0
@@ -221,7 +194,7 @@ offset_top = 18.0
 offset_right = 2.0
 offset_bottom = 50.0
 mouse_filter = 2
-color = Color(0.38, 0, 0.65, 1)
+color = Color(0.61840063, 0.21029416, 1, 1)
 
 [node name="Action" type="RichTextLabel" parent="Control/RhythmLane/LeaderStepTemplate" unique_id=1335177020]
 layout_mode = 0
@@ -446,6 +419,16 @@ vertical_alignment = 1
 [node name="Messages" type="Node" parent="Control/Dialogue" unique_id=470843434]
 unique_name_in_owner = true
 script = ExtResource("17_messages")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control" unique_id=1225985059]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 273.0
+offset_bottom = 48.0
+bbcode_enabled = true
+text = "Chapter [b]1 : [/b][[i]Fitting in"
+fit_content = true
 
 [node name="Friend" parent="." unique_id=1255160976 instance=ExtResource("13_c6i3y")]
 position = Vector2(261, 107.00001)

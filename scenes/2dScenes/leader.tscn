@@ -2,21 +2,35 @@
 
 [ext_resource type="PackedScene" uid="uid://cbb533vdh4aru" path="res://scenes/2dScenes/body_template.tscn" id="1_g50hy"]
 [ext_resource type="Texture2D" uid="uid://dflsjgbkmo78u" path="res://assets/Kenney_Shapes/PNG/Default/purple_body_rhombus.png" id="2_808tp"]
+[ext_resource type="Texture2D" uid="uid://cxdaqg4dcpno8" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_h.png" id="3_fbkli"]
 [ext_resource type="Texture2D" uid="uid://cnc7sffr5afsd" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_open.png" id="3_krv14"]
-[ext_resource type="Texture2D" uid="uid://bvl256n1r3nq4" path="res://assets/Kenney_Shapes/PNG/Default/face_h.png" id="3_n0gui"]
-
-[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_point.png" id="pose_point"]
-[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_peace.png" id="pose_peace"]
-[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_rock.png" id="pose_rock"]
-[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_thumb.png" id="pose_thumb"]
-[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_closed.png" id="pose_closed"]
+[ext_resource type="Texture2D" uid="uid://s1slsex8g3f1" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_b.png" id="4_koldm"]
+[ext_resource type="Texture2D" uid="uid://bvacbmm8m8urs" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_i.png" id="5_ygo0s"]
+[ext_resource type="Texture2D" uid="uid://bk5nmxfckld78" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_c.png" id="6_v01ie"]
+[ext_resource type="Texture2D" uid="uid://bkdkcbt753oak" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_g.png" id="7_jrhhk"]
+[ext_resource type="Texture2D" uid="uid://cb0r86sinb07s" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_e.png" id="8_qatir"]
+[ext_resource type="Texture2D" uid="uid://c7kdjx3lbroqg" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_d.png" id="9_ipabo"]
+[ext_resource type="Texture2D" uid="uid://dyxgaj0yq5jnm" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_f.png" id="10_s3668"]
+[ext_resource type="Texture2D" uid="uid://dxu1fa3r01f7k" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_closed.png" id="pose_closed"]
+[ext_resource type="Texture2D" uid="uid://uaymrhvmlr38" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_peace.png" id="pose_peace"]
+[ext_resource type="Texture2D" uid="uid://3iipmvkycahn" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_point.png" id="pose_point"]
+[ext_resource type="Texture2D" uid="uid://qj0hccek07bs" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_rock.png" id="pose_rock"]
+[ext_resource type="Texture2D" uid="uid://doldl3f554lo1" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_thumb.png" id="pose_thumb"]
 
 [node name="Leader" unique_id=909801526 groups=["Leader"] instance=ExtResource("1_g50hy")]
 script = null
 
-[node name="FaceSprites" parent="." index="0"]
+[node name="FaceSprites" parent="." index="0" unique_id=2042377121]
 body_sprite = ExtResource("2_808tp")
-face_sprite = ExtResource("3_n0gui")
+face_sprite = ExtResource("3_fbkli")
+sadfacelevel1_sprite = ExtResource("4_koldm")
+sadfacelevel2_sprite = ExtResource("5_ygo0s")
+smileface_sprite = ExtResource("6_v01ie")
+angryface_sprite = ExtResource("7_jrhhk")
+smugface_sprite = ExtResource("3_fbkli")
+smugface2_sprite = ExtResource("8_qatir")
+smugface3_sprite = ExtResource("9_ipabo")
+evilface_sprite = ExtResource("10_s3668")
 wavehand_sprite = ExtResource("3_krv14")
 pointhand_sprite = ExtResource("pose_point")
 peacehand_sprite = ExtResource("pose_peace")
@@ -29,13 +43,13 @@ scale = Vector2(1.2, 1.2)
 texture = ExtResource("2_808tp")
 
 [node name="Face" parent="." index="3" unique_id=2004765950]
-texture = ExtResource("3_n0gui")
+texture = ExtResource("3_fbkli")
 
 [node name="LeftHand" parent="LeftArmPivot" parent_id_path=PackedInt32Array(257578237) index="0" unique_id=135106367]
 texture = ExtResource("3_krv14")
 
-[node name="PointHand" parent="Pointing" parent_id_path=PackedInt32Array(703857854) index="0" unique_id=811569203]
-texture = ExtResource("pose_point")
-
 [node name="RightHand" parent="RightArmPivot" parent_id_path=PackedInt32Array(1619714027) index="0" unique_id=1253301101]
 texture = ExtResource("3_krv14")
+
+[node name="PointHand" parent="Pointing" parent_id_path=PackedInt32Array(703857854) index="0" unique_id=811569203]
+texture = ExtResource("pose_point")

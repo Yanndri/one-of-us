@@ -1,5 +1,7 @@
 extends PanelContainer
 
+signal line_finished
+
 # Each pointer is named Speech + speaker, for example SpeechPlayer1.
 # The duration in say() is the reading time after the text finishes typing.
 @export_range(1.0, 120.0, 1.0) var characters_per_second: float = 40.0
@@ -32,20 +34,27 @@ extends PanelContainer
 
 var _time_remaining: float = 0.0
 var _revealed_characters: float = 0.0
+var _face_sprites: Node
+var _previous_face: StringName = &"default"
+var _dialogue_face: StringName = &""
+var _face_time_remaining: float = -1.0
 
 
 func _ready() -> void:
 	stop_talking()
 
 
-func play_line(line_name: StringName, reading_time_override: float = -1.0) -> void:
+func play_line(line_name: StringName, reading_time_override: float = -1.0, speaker_override: StringName = &"") -> void:
 	# Read the entry from the Messages node's single dictionary.
 	var line = messages.get_message(line_name)
 	if line.is_empty():
 		push_warning("Unknown dialogue line: " + str(line_name))
 		return
 	var duration: float = line.reading_time if reading_time_override < 0.0 else reading_time_override
-	say(StringName(line.speaker), line.text, duration)
+	var speaker := StringName(line.speaker) if speaker_override == &"" else speaker_override
+	say(speaker, line.text, duration)
+	if visible:
+		_apply_message_face(speaker, line)
 	# Use `await dialogue.play_line(...)` to wait before the caller continues.
 	# Dialogue typing and rendering keep running while that caller is waiting.
 	var wait_time := maxf(float(line.get("wait_time", 0.0)), 0.0)
@@ -70,10 +79,14 @@ func say(speaker: StringName, text: String, duration: float = 3.0) -> void:
 	set_process(true)
 
 
+func wait_until_finished() -> void:
+	# Sequences can wait for typing and reading, beyond a shorter wait_time.
+	if visible:
+		await line_finished
+
+
 func _speaker_color(speaker: StringName) -> Color:
-	var character: Node = null
-	if speaker_nodes.has(speaker):
-		character = get_node_or_null(speaker_nodes[speaker])
+	var character := _speaker_character(speaker)
 	if character != null:
 		for group in group_colors:
 			if character.is_in_group(group):
@@ -81,7 +94,46 @@ func _speaker_color(speaker: StringName) -> Color:
 	return default_text_color
 
 
+func _speaker_character(speaker: StringName) -> Node:
+	if speaker_nodes.has(speaker):
+		return get_node_or_null(speaker_nodes[speaker])
+	return null
+
+
+func get_speaker_for_character(character: Node) -> StringName:
+	# Resolve the actual pointing NPC to its configured dialogue pointer.
+	for speaker in speaker_nodes:
+		if _speaker_character(speaker) == character:
+			return speaker
+	return &""
+
+
+func _apply_message_face(speaker: StringName, line: Dictionary) -> void:
+	var expression := StringName(line.get("face", &""))
+	var character := _speaker_character(speaker)
+	if expression == &"" or character == null:
+		return
+	_face_sprites = character.get_node_or_null("FaceSprites")
+	if _face_sprites == null:
+		return
+	_previous_face = StringName(_face_sprites.get("face_expression"))
+	_dialogue_face = expression
+	_face_time_remaining = float(line.get("face_time", -1.0))
+	_face_sprites.call("set_face_expression", expression)
+
+
+func _restore_message_face() -> void:
+	# Do not overwrite a newer expression set by gameplay while this line was open.
+	if is_instance_valid(_face_sprites) and StringName(_face_sprites.get("face_expression")) == _dialogue_face:
+		_face_sprites.call("set_face_expression", _previous_face)
+	_face_sprites = null
+	_dialogue_face = &""
+	_face_time_remaining = -1.0
+
+
 func stop_talking() -> void:
+	var was_talking := visible
+	_restore_message_face()
 	# Hide every pointer before switching speakers or ending a line.
 	for pointer in speakers.get_children():
 		if pointer is CanvasItem:
@@ -92,9 +144,16 @@ func stop_talking() -> void:
 	_time_remaining = 0.0
 	hide()
 	set_process(false)
+	if was_talking:
+		line_finished.emit()
 
 
 func _process(delta: float) -> void:
+	# Face duration uses real frame time, independent of typewriter/reading time.
+	if _face_time_remaining > 0.0:
+		_face_time_remaining -= delta
+		if _face_time_remaining <= 0.0:
+			_restore_message_face()
 	# Reveal the existing text rather than rebuilding the string every frame.
 	var character_count := dialogue_text.get_total_character_count()
 	if _revealed_characters < character_count:
