@@ -9,6 +9,14 @@
 [ext_resource type="Texture2D" uid="uid://qj0hccek07bs" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_rock.png" id="7_2tklq"]
 [ext_resource type="Texture2D" uid="uid://doldl3f554lo1" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_thumb.png" id="8_na3k5"]
 [ext_resource type="Texture2D" uid="uid://dxu1fa3r01f7k" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_closed.png" id="9_dokou"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/yellow_body_square.png" id="ally_body"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/face_a.png" id="ally_face"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/hand_yellow_open.png" id="ally_open"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/hand_yellow_point.png" id="ally_point"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/hand_yellow_peace.png" id="ally_peace"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/hand_yellow_rock.png" id="ally_rock"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/hand_yellow_thumb.png" id="ally_thumb"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/hand_yellow_closed.png" id="ally_closed"]
 
 [node name="NPC" unique_id=909801526 groups=["Enemy"] instance=ExtResource("1_rv78h")]
 
@@ -21,6 +29,14 @@ peacehand_sprite = ExtResource("6_4gb1s")
 rocknrollhand_sprite = ExtResource("7_2tklq")
 thumbsuphand_sprite = ExtResource("8_na3k5")
 fisthand_sprite = ExtResource("9_dokou")
+ally_body_sprite = ExtResource("ally_body")
+ally_face_sprite = ExtResource("ally_face")
+ally_wavehand_sprite = ExtResource("ally_open")
+ally_pointhand_sprite = ExtResource("ally_point")
+ally_peacehand_sprite = ExtResource("ally_peace")
+ally_rocknrollhand_sprite = ExtResource("ally_rock")
+ally_thumbsuphand_sprite = ExtResource("ally_thumb")
+ally_fisthand_sprite = ExtResource("ally_closed")
 
 [node name="Body" parent="." index="2" unique_id=171704627]
 texture = ExtResource("2_4nto7")

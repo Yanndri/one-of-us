@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://bhffg2wv51vj"]
+
+[ext_resource type="Script" uid="uid://cnjxxio1dlo1v" path="res://scripts/reflection_screen.gd" id="1_reflection"]
+
+[node name="ReflectionScreen" type="Control" unique_id=1777106051]
+z_index = 100
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_reflection")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1239213403]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.12, 0.92)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=1089435168]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=1949822235]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Message" type="RichTextLabel" parent="Center/VBox" unique_id=1650981816]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(640, 128)
+layout_mode = 2
+bbcode_enabled = true
+text = "Reflection line goes here."
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayAgain" type="Button" parent="Center/VBox" unique_id=1010714031]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Play again"

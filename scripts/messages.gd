@@ -177,7 +177,7 @@ var messages: Dictionary = {
 		"face_time": 2.5,
 	},
 	&"GaveInFriend": {
-		"text": "...We just did what they did to [u]you[/u].",
+		"text": "...I don't know how to feel about this.",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.5,
@@ -255,6 +255,47 @@ var messages: Dictionary = {
 		"reading_time": 2.5,
 		"wait_time": 3.0,
 	},
+	# Help round failed and everyone has voted: the group wants the player to point at Friend.
+	&"C3PointAtFriend": {
+		"text": "Your friend can't keep up. [color=#ff5555][shake rate=20 level=6]Point at them.[/shake][/color]",
+		"speaker": &"Leader",
+		"reading_time": 10.0,
+		"wait_time": 10.0,
+		"face": &"smug",
+		"face_time": 8.0,
+	},
+	# The player held out, but everyone ended up pointing at them: Game Over.
+	&"C3SingledOutForFriend": {
+		"text": "You stood by them... and now [color=#ff5555][shake rate=20 level=6]you're[/shake][/color] the one outside.",
+		"speaker": &"Leader",
+		"reading_time": 3.5,
+		"wait_time": 4.0,
+		"face": &"smug",
+		"face_time": 3.5,
+	},
+	# The player held out: another help round.
+	&"C3StillWithMe": {
+		"text": "...You're [u]still with me[/u]?",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+	},
+	# The player pointed at Friend.
+	&"C3GaveInLeader": {
+		"text": "See? That wasn't so hard.",
+		"speaker": &"Leader",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+		"face": &"smug",
+		"face_time": 2.5,
+	},
+	&"C3FriendBetrayed": {
+		"text": "...I thought you were [u]with me[/u].",
+		"speaker": &"Friend1",
+		"reading_time": 3.5,
+		"wait_time": 4.0,
+		"face": &"sad_level_3",
+	},
 	# Help round cleared.
 	&"C3Thanks": {
 		"text": "...I did it. Thanks for [u]not leaving me behind[/u].",
@@ -275,6 +316,88 @@ var messages: Dictionary = {
 		"speaker": &"Leader",
 		"reading_time": 3.0,
 		"wait_time": 3.5,
+	},
+
+	# --- Chapter 4: One of Us ---
+	&"ChapterFourIntro": {
+		"text": "Last one. Let's finish this together.",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.0,
+	},
+	# Path A: Friend is with you.
+	&"C4Remember": {
+		"text": "...Remember when [u]I[/u] couldn't keep up?",
+		"speaker": &"Friend1",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+	},
+	&"C4LeaderFollowMyLead": {
+		"text": "...It's okay. Just [u]follow my lead[/u].",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+	},
+	&"C4Together": {
+		"text": "Everyone. [wave amp=30 freq=5]Together.[/wave]",
+		"speaker": &"Leader",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+	},
+	&"C4Again": {
+		"text": "Again. Nobody gets left behind.",
+		"speaker": &"Leader",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+	},
+	&"C4EndingTogether": {
+		"text": "See? There's room for [wave amp=30 freq=5]everyone[/wave].",
+		"speaker": &"Friend1",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+		"face": &"happy",
+		"face_time": 3.0,
+	},
+	# Path B: Friend is gone.
+	&"C4YouKnow": {
+		"text": "You know what to do.",
+		"speaker": &"Leader",
+		"reading_time": 2.5,
+		"wait_time": 1.0,
+		"face": &"smug",
+		"face_time": 2.5,
+	},
+	&"C4OneOfUsNow": {
+		"text": "See? You're [color=#a45aef]one of us[/color] now.",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+		"face": &"smug",
+		"face_time": 3.0,
+	},
+	&"C4NotOneOfUs": {
+		"text": "Then you're [color=#ff5555][shake rate=20 level=6]not one of us[/shake][/color].",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+		"face": &"angry",
+		"face_time": 3.0,
+	},
+	# Reflection screen text, one per ending. Only "text" is used.
+	&"ReflectionTogether": {
+		"text": "One person who stays changes what the group does next.",
+		"speaker": &"Leader",
+		"reading_time": 1.0,
+	},
+	&"ReflectionOneOfUs": {
+		"text": "Belonging shouldn't cost you who you are.",
+		"speaker": &"Leader",
+		"reading_time": 1.0,
+	},
+	&"ReflectionAlone": {
+		"text": "Standing up is harder alone. It's never too late to stand with someone.",
+		"speaker": &"Leader",
+		"reading_time": 1.0,
 	},
 }
 

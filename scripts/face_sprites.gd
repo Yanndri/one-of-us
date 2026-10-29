@@ -82,6 +82,22 @@ extends Node
 		fisthand_sprite = value
 		_queue_refresh()
 
+@export_group("Ally")
+# The look this character switches to when they become the player's ally.
+# Leave a slot empty to keep that texture as it is.
+@export var ally_body_sprite: Texture2D
+# Default (resting) face once they're an ally, so they stop looking hostile.
+@export var ally_face_sprite: Texture2D
+@export var ally_wavehand_sprite: Texture2D
+@export var ally_pointhand_sprite: Texture2D
+@export var ally_peacehand_sprite: Texture2D
+@export var ally_rocknrollhand_sprite: Texture2D
+@export var ally_thumbsuphand_sprite: Texture2D
+@export var ally_fisthand_sprite: Texture2D
+@export_group("")
+
+var is_ally: bool = false
+
 @export_enum("wave", "point", "peace", "rock", "thumbs_up", "fist") var hand_pose: String = "wave":
 	set(value):
 		hand_pose = value
@@ -186,3 +202,26 @@ func _apply_texture(path: NodePath, texture: Texture2D) -> void:
 	var sprite := get_node_or_null(path) as Sprite2D
 	if sprite != null:
 		sprite.texture = texture
+
+
+func become_ally() -> void:
+	# Swap to the Ally textures set in the Inspector, so the color shows whose side they're on.
+	if is_ally:
+		return
+	is_ally = true
+	if ally_body_sprite != null:
+		body_sprite = ally_body_sprite
+	if ally_face_sprite != null:
+		face_sprite = ally_face_sprite
+	if ally_wavehand_sprite != null:
+		wavehand_sprite = ally_wavehand_sprite
+	if ally_pointhand_sprite != null:
+		pointhand_sprite = ally_pointhand_sprite
+	if ally_peacehand_sprite != null:
+		peacehand_sprite = ally_peacehand_sprite
+	if ally_rocknrollhand_sprite != null:
+		rocknrollhand_sprite = ally_rocknrollhand_sprite
+	if ally_thumbsuphand_sprite != null:
+		thumbsuphand_sprite = ally_thumbsuphand_sprite
+	if ally_fisthand_sprite != null:
+		fisthand_sprite = ally_fisthand_sprite

@@ -20,7 +20,8 @@ var input_window: float = 0.15
 @onready var dialogue = $"../Control/Dialogue"
 @onready var table = $"../Control/RoundTable"
 
-@onready var chapter_label: RichTextLabel = $"../Control/RichTextLabel"
+@onready var chapter_label: RichTextLabel = $"../Control/ChapterLabel"
+@onready var reflection_screen = $"../Control/ReflectionScreen"
 
 # How far a seat moves away from the table per step (per accuser for the player).
 @export var seat_slide_distance: float = 40.0
@@ -30,6 +31,15 @@ var input_window: float = 0.15
 @export var ticks_match_timing_window: bool = true
 # At the end of a chapter, everyone still pointing lowers their hand one at a time, this far apart.
 @export_range(0.1, 2.0, 0.05) var hand_lower_interval: float = 0.6
+# How long an NPC's pointing arm takes to swing onto a new target. 0 snaps instantly.
+@export_range(0.0, 1.0, 0.05) var npc_pointing_tween_duration: float = 0.3
+
+# Excluded characters fade to this tint (the alpha makes them see-through).
+@export var excluded_color: Color = Color(0.55, 0.55, 0.55, 0.55)
+@export_range(0.0, 3.0, 0.1) var excluded_fade_duration: float = 1.0
+
+# One running pointing tween per NPC, so a new target cancels the old swing.
+var _pointing_tweens: Dictionary = {}
 
 @export_group("Chapter 1")
 # Hand-made rounds, in order. Edit these .tres files to set gestures and positions yourself.
@@ -89,6 +99,20 @@ var input_window: float = 0.15
 ]
 # Gestures per random round, used only for empty slots above.
 @export var chapter_three_rounds: Array[int] = [4, 4, 4]
+@export_group("Chapter 4")
+# Rounds in order: a normal round, the round where someone slips, and the final round together.
+# Clear a slot for random gestures.
+@export var chapter_four_levels: Array[RhythmLevel] = [
+	preload("res://levels/ch4_round_1.tres"),
+	preload("res://levels/ch4_round_2.tres"),
+	preload("res://levels/ch4_round_3.tres"),
+]
+# Gestures per random round, used only for empty slots above.
+@export var chapter_four_rounds: Array[int] = [4, 4, 4]
+# Seconds the Leader takes to glide into Friend's seat in the ending where Friend is gone.
+@export_range(0.1, 5.0, 0.1) var leader_glide_duration: float = 1.5
+# What the player's body becomes when they turn into "one of us".
+@export var player_conform_body: Texture2D = preload("res://assets/Kenney_Shapes/PNG/Default/purple_body_circle.png")
 @export_group("")
 
 const RANDOM_GESTURES: Array[StringName] = [&"clap", &"peace", &"hands_up", &"rock"]
@@ -100,15 +124,25 @@ var _singled_out: bool = false
 # Chapter 2 votes against the odd one out. Votes only go up: an NPC can turn to point at the
 # player for a while, but their vote against the odd one out still counts.
 var odd_votes: int = 0
+# Who cast each of the odd one out's votes, in order, so each vote icon can use the voter's own hand.
+var odd_voters: Array[Node2D] = []
 # Chapter 3: 0 = Friend first messes up, 1 = group turns on Friend, 2 = the help round.
 var chapter_three_round: int = 0
 # In the help round Friend copies the player: every beat the player lands, Friend lands too.
 var _help_round: bool = false
+# Chapter 4: 0 = normal round, 1 = someone slips, 2 = final round together.
+var chapter_four_round: int = 0
+# The final round: a slip just means trying again together.
+var _final_round: bool = false
+# Friend's node, kept even if Friend is excluded and leaves the Friend list.
+var _friend: Node2D
 # True once anyone has pointed at the player, so lines can refer back to how that felt.
 var _player_was_pointed_at: bool = false
 var odd_one_out: Node2D
 # Chapter 3 can read this: true if the player pointed at the odd one out.
 var gave_in_to_pressure: bool = false
+# Characters the whole group voted out. They stay far from the table, sad, and stop taking part.
+var excluded: Array[Node2D] = []
 
 var elapsed: float = 0.0
 var current_beat: int = -1
@@ -141,13 +175,18 @@ func _ready() -> void:
 				else:
 					npc_animations.append(animation)
 	_seats[player] = player.global_position
+	# The Leader can be pointed at too, so their vote icons need updating as well.
+	_seats[leader_animation.get_parent()] = leader_animation.get_parent().global_position
 	for animation in npc_animations + friend_animations:
 		var character := animation.get_parent() as Node2D
 		_seats[character] = character.global_position
 	odd_one_out = get_node_or_null(odd_one_out_path) as Node2D
+	if not friend_animations.is_empty():
+		_friend = friend_animations[0].get_parent() as Node2D
 	_load_chapter_one_round(0)
 	_play_pose(&"default")
 	player.rhythm_action.connect(_on_rhythm_action)
+	player.pointed_at.connect(func(_target: Node2D) -> void: _update_vote_icons())
 	if not lane.is_node_ready():
 		await lane.ready
 	await lane.prepare_icons()
@@ -271,7 +310,7 @@ func _process(delta: float) -> void:
 		current_beat += 1
 		var action: StringName = pattern[current_beat]
 		_play_followers_pose(&"default" if action == &"rest" else action)
-		if chapter == 2 and (odd_one_out_late_on_every_beat or current_beat in odd_one_out_late_beats):
+		if (chapter == 2 or (chapter == 4 and chapter_four_round == 1)) and (odd_one_out_late_on_every_beat or current_beat in odd_one_out_late_beats):
 			_play_late_pose(&"default" if action == &"rest" else action)
 		if chapter == 3:
 			_play_friend_beat(current_beat)
@@ -283,6 +322,7 @@ func _process(delta: float) -> void:
 	if response_time > response_end:
 		# Stop scoring, restore the normal face, then show the NPC reaction.
 		phase = &"finished"
+		_update_vote_icons()
 		player.rhythm_input_enabled = false
 		player.free_gesturing_enabled = true
 		player.perform_rhythm_action(&"rest")
@@ -293,6 +333,8 @@ func _process(delta: float) -> void:
 		if failed and _help_round:
 			# A slip while helping just means trying again together, with no new accuser.
 			_retry_help_round()
+		elif failed and _final_round:
+			_retry_final_round()
 		elif failed:
 			_react_to_mistake()
 			_play_failure_dialogue()
@@ -302,8 +344,10 @@ func _process(delta: float) -> void:
 				_clear_chapter_one_round()
 			elif chapter == 2:
 				_clear_chapter_two_round()
-			else:
+			elif chapter == 3:
 				_clear_chapter_three_round()
+			else:
+				_clear_chapter_four_round()
 		return
 
 
@@ -314,6 +358,7 @@ func _start_response() -> void:
 	elapsed = 0.0
 	current_beat = -1
 	phase = &"response"
+	_update_vote_icons()
 	player.rhythm_input_enabled = true
 	player.reset_gesture_feedback()
 	_play_followers_pose(&"default")
@@ -437,16 +482,28 @@ func _slide_seat(character: Node2D, steps: int) -> Tween:
 
 func _update_vote_icons() -> void:
 	# The player's votes are the NPCs pointing at them; the odd one out's are their remembered votes.
+	# Votes hide while everyone is gesturing, and on anyone nobody is pointing at right now.
+	var gesturing := phase == &"leader" or phase == &"preparation" or phase == &"response"
 	for character in _seats:
 		var icons: Node = character.get_node_or_null("VoteIcons")
 		if icons == null:
 			continue
-		var votes := 0
-		if character == player:
-			votes = pointing_npc_animations.size()
-		elif character == odd_one_out and chapter >= 2:
-			votes = odd_votes
-		icons.show_votes(votes)
+		# Each icon uses the voter's own pointing hand, so its color shows who voted.
+		var voters: Array[Node2D] = []
+		if gesturing:
+			pass
+		elif character == player:
+			for animation in pointing_npc_animations:
+				voters.append(animation.get_parent() as Node2D)
+		elif character == odd_one_out and chapter >= 2 and not odd_accuser_animations.is_empty():
+			voters = odd_voters.duplicate()
+		# Whoever the player is pointing at right now also gets the player's hand.
+		if not gesturing and character != player and _player_target() == character and not voters.has(player):
+			voters.append(player)
+		var textures: Array[Texture2D] = []
+		for voter in voters:
+			textures.append(voter.get_node("FaceSprites").pointhand_sprite)
+		icons.show_votes(textures)
 
 
 func _reaim_accusers() -> void:
@@ -465,11 +522,27 @@ func _point_npc_at(animation: AnimationPlayer, target: Node2D) -> void:
 	var npc := animation.get_parent() as Node2D
 	var pointing := npc.get_node("Pointing") as Node2D
 	var hand := pointing.get_node("PointHand") as Sprite2D
+	# An NPC already pointing swings from where their arm is; otherwise from the pose's rest angle.
+	var was_pointing := pointing.visible
+	var previous_rotation := pointing.rotation
 	_play_character_pose(animation, &"pointing")
 	pointing.position = Vector2.ZERO
 	hand.position = Vector2(76.0, 0.0)
 	hand.rotation = PI / 4.0
-	pointing.rotation = npc.to_local(target.global_position).angle()
+	if was_pointing:
+		pointing.rotation = previous_rotation
+	var target_angle := npc.to_local(target.global_position).angle()
+	# Take the shortest way round, like the player's pointing tween.
+	var end_angle := pointing.rotation + wrapf(target_angle - pointing.rotation, -PI, PI)
+	if _pointing_tweens.has(npc) and _pointing_tweens[npc].is_valid():
+		_pointing_tweens[npc].kill()
+	if npc_pointing_tween_duration <= 0.0:
+		pointing.rotation = end_angle
+		return
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(pointing, "rotation", end_angle, npc_pointing_tween_duration)
+	_pointing_tweens[npc] = tween
 
 
 func _play_late_pose(animation: StringName) -> void:
@@ -539,7 +612,7 @@ func _clear_chapter_two_round() -> void:
 	_restart_level()
 
 
-func _add_odd_accuser() -> void:
+func _add_odd_accuser(with_line: bool = true) -> void:
 	# One more vote against the odd one out. Then as many NPCs point at them as there are votes,
 	# so NPCs who turned to the player come back (several can come back at once).
 	if odd_one_out == null:
@@ -561,13 +634,20 @@ func _add_odd_accuser() -> void:
 		odd_accuser_animations.append(next)
 		if joiner == null:
 			joiner = next
+	# Remember who cast the new vote: the first current accuser who hasn't voted yet.
+	for animation in odd_accuser_animations:
+		if odd_voters.size() >= odd_votes:
+			break
+		var voter := animation.get_parent() as Node2D
+		if not odd_voters.has(voter):
+			odd_voters.append(voter)
 	player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
 	_slide_player_seat(pointing_npc_animations.size())
 	_reaim_accusers()
 	_slide_seat(odd_one_out, odd_votes)
 	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"sad_level_1" if odd_votes < 2 else &"sad_level_2")
 	var line_index := mini(odd_votes - 1, odd_join_lines.size() - 1)
-	if line_index >= 0 and joiner != null:
+	if with_line and line_index >= 0 and joiner != null:
 		await dialogue.play_line(odd_join_lines[line_index], -1.0, dialogue.get_speaker_for_character(joiner.get_parent()))
 		await dialogue.wait_until_finished()
 
@@ -595,17 +675,39 @@ func _lower_hands_one_by_one() -> void:
 	_slide_player_seat(0)
 	for friend_animation in friend_animations:
 		friend_animation.get_parent().get_node("FaceSprites").set_default_face_expression(&"default")
-	if odd_one_out != null:
+	if odd_one_out != null and not excluded.has(odd_one_out):
 		odd_one_out.get_node("FaceSprites").set_default_face_expression(&"default")
 		_slide_seat(odd_one_out, 0)
 	odd_votes = 0
+	odd_voters.clear()
 
 
-func _game_over() -> void:
+func _exclude(character: Node2D) -> void:
+	# Everyone voted: this character is out. They keep their distance and their sad face,
+	# and no longer gesture, vote or point for the rest of the game.
+	if excluded.has(character):
+		return
+	excluded.append(character)
+	character.get_node("FaceSprites").set_default_face_expression(&"sad_level_3")
+	# Grey them out so they fade into the background.
+	create_tween().tween_property(character, "modulate", excluded_color, excluded_fade_duration)
+	for animation in npc_animations.duplicate():
+		if animation.get_parent() == character:
+			npc_animations.erase(animation)
+			odd_accuser_animations.erase(animation)
+			pointing_npc_animations.erase(animation)
+			_play_character_pose(animation, &"default")
+	for animation in friend_animations.duplicate():
+		if animation.get_parent() == character:
+			friend_animations.erase(animation)
+			_play_character_pose(animation, &"default")
+
+
+func _game_over(line: StringName = &"GameOver") -> void:
 	# The player has been singled out. Show it, then start the game again.
 	phase = &"game_over"
 	chapter_label.text = "[b]Game Over"
-	await dialogue.play_line(&"GameOver")
+	await dialogue.play_line(line)
 	await dialogue.wait_until_finished()
 	get_tree().reload_current_scene()
 
@@ -757,9 +859,83 @@ func _clear_chapter_three_round() -> void:
 
 func _retry_help_round() -> void:
 	player.free_gesturing_enabled = false
+	# Friend copied the mistake, so it counts against them like any other mess-up.
+	if odd_votes < _odd_vote_pool():
+		await _add_odd_accuser()
+	# Once everyone has voted, the group turns to the player: point at your friend.
+	if odd_votes >= _odd_vote_pool():
+		await _run_friend_pressure()
+		return
 	await dialogue.play_line(&"C3Again")
 	await dialogue.wait_until_finished()
 	_restart_level()
+
+
+func _run_friend_pressure() -> void:
+	# Chapter 2's pressure, aimed at Friend. Clicking Friend gives in; waiting it out holds out.
+	phase = &"pressure"
+	player.free_gesturing_enabled = true
+	_clear_selections()
+	_update_vote_icons()
+	await dialogue.play_line(&"C3PointAtFriend")
+	await dialogue.wait_until_finished()
+	var gave_in := false
+	for index in pressure_lines.size():
+		if await _wait_for_accusation(pressure_interval):
+			gave_in = true
+			break
+		# One more NPC turns from Friend to the player. Friend's votes stay.
+		var turner: AnimationPlayer = null
+		for animation in npc_animations:
+			if not pointing_npc_animations.has(animation):
+				turner = animation
+				break
+		if turner == null:
+			continue
+		odd_accuser_animations.erase(turner)
+		pointing_npc_animations.append(turner)
+		_point_npc_at_player(turner)
+		player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
+		_slide_player_seat(pointing_npc_animations.size())
+		dialogue.play_line(pressure_lines[index], -1.0, dialogue.get_speaker_for_character(turner.get_parent()))
+	if not gave_in:
+		gave_in = await _wait_for_accusation(pressure_interval)
+	dialogue.stop_talking()
+	player.free_gesturing_enabled = false
+	if gave_in:
+		await _play_friend_excluded_ending()
+		return
+	# Held out. If everyone is now pointing at the player, the player is the one singled out.
+	if pointing_npc_animations.size() >= npc_animations.size():
+		await _game_over(&"C3SingledOutForFriend")
+		return
+	# Otherwise another help round. Whoever turned on the player keeps pointing at them.
+	await dialogue.play_line(&"C3StillWithMe")
+	await dialogue.wait_until_finished()
+	_restart_level()
+
+
+func _play_friend_excluded_ending() -> void:
+	# The player pointed at Friend: everyone has voted, so Friend is out.
+	phase = &"chapter_end"
+	if not odd_voters.has(player):
+		odd_voters.append(player)
+	odd_votes = odd_voters.size()
+	# The group has what it wanted, so nobody points at the player any more.
+	for animation in pointing_npc_animations:
+		odd_accuser_animations.append(animation)
+	pointing_npc_animations.clear()
+	player.set_pointing_pressure(0, npc_animations.size())
+	player.face_sprites.set_default_face_expression(&"sad_level_2")
+	_reaim_accusers()
+	_slide_player_seat(0)
+	_slide_seat(odd_one_out, odd_votes + 1)
+	_exclude(odd_one_out)
+	await dialogue.play_line(&"C3GaveInLeader")
+	await dialogue.wait_until_finished()
+	await dialogue.play_line(&"C3FriendBetrayed")
+	await dialogue.wait_until_finished()
+	_start_chapter_four()
 
 
 func _play_help_success() -> void:
@@ -773,7 +949,212 @@ func _play_help_success() -> void:
 	await dialogue.wait_until_finished()
 	await dialogue.play_line(&"C3LeaderReconsiders")
 	await dialogue.wait_until_finished()
-	chapter_label.text = "To be continued..."
+	_start_chapter_four()
+
+
+func _start_chapter_four() -> void:
+	await _lower_hands_one_by_one()
+	chapter = 4
+	chapter_four_round = 0
+	_help_round = false
+	_final_round = false
+	odd_one_out = null
+	_load_round(chapter_four_levels, chapter_four_rounds, 0)
+	chapter_label.text = "Chapter [b]4 : [/b][i]One of Us"
+	await dialogue.play_line(&"ChapterFourIntro")
+	await dialogue.wait_until_finished()
+	_restart_level()
+
+
+func _friend_is_with_you() -> bool:
+	return _friend != null and not excluded.has(_friend)
+
+
+func _clear_chapter_four_round() -> void:
+	if chapter_four_round == 0:
+		# Next round, someone at the table starts slipping.
+		chapter_four_round = 1
+		odd_one_out = npc_animations.pick_random().get_parent() as Node2D
+		_load_round(chapter_four_levels, chapter_four_rounds, 1)
+		_restart_level()
+	elif chapter_four_round == 1:
+		await _vote_against_struggler()
+		if _friend_is_with_you():
+			await _play_leader_learns()
+		else:
+			await _run_final_pressure()
+	else:
+		await _play_ending_together()
+
+
+func _vote_against_struggler() -> void:
+	# The group votes against whoever slipped, one by one, until only the Leader's vote is missing.
+	while odd_votes < _odd_vote_pool():
+		await _add_odd_accuser(odd_votes == 0)
+		await get_tree().create_timer(hand_lower_interval).timeout
+	# The Leader raises a hand to point too...
+	_point_npc_at(leader_animation, odd_one_out)
+	await get_tree().create_timer(1.0).timeout
+
+
+func _play_leader_learns() -> void:
+	# Path A: Friend is with you, and the Leader learns from the two of you.
+	await dialogue.play_line(&"C4Remember")
+	await dialogue.wait_until_finished()
+	_play_character_pose(leader_animation, &"default")
+	await dialogue.play_line(&"C4LeaderFollowMyLead")
+	await dialogue.wait_until_finished()
+	await _lower_hands_one_by_one()
+	await _welcome_back_excluded()
+	# The final round: the one who slipped follows the Leader, and everyone plays together.
+	_final_round = true
+	chapter_four_round = 2
+	_load_round(chapter_four_levels, chapter_four_rounds, 2)
+	await dialogue.play_line(&"C4Together")
+	await dialogue.wait_until_finished()
+	_restart_level()
+
+
+func _welcome_back_excluded() -> void:
+	# Everyone who was left out fades back in and returns to the table.
+	for character in excluded:
+		create_tween().tween_property(character, "modulate", Color.WHITE, excluded_fade_duration)
+		_slide_seat(character, 0)
+		character.get_node("FaceSprites").set_default_face_expression(&"default")
+		var animation := character.get_node("AnimationPlayer") as AnimationPlayer
+		if character == _friend:
+			friend_animations.append(animation)
+		else:
+			npc_animations.append(animation)
+		await get_tree().create_timer(hand_lower_interval).timeout
+	excluded.clear()
+
+
+func _retry_final_round() -> void:
+	player.free_gesturing_enabled = false
+	await dialogue.play_line(&"C4Again")
+	await dialogue.wait_until_finished()
+	_restart_level()
+
+
+func _play_ending_together() -> void:
+	# Ending A: everyone made it through together.
+	_final_round = false
+	phase = &"chapter_end"
+	await dialogue.play_line(&"C4EndingTogether")
+	await dialogue.wait_until_finished()
+	_show_reflection(&"ReflectionTogether")
+
+
+func _run_final_pressure() -> void:
+	# Path B: Friend is gone. The Leader expects the player to finish the vote.
+	phase = &"pressure"
+	player.free_gesturing_enabled = true
+	_clear_selections()
+	_update_vote_icons()
+	await dialogue.play_line(&"C4YouKnow")
+	await dialogue.wait_until_finished()
+	var gave_in := false
+	for index in pressure_lines.size():
+		if await _wait_for_accusation(pressure_interval):
+			gave_in = true
+			break
+		var turner: AnimationPlayer = null
+		for animation in npc_animations:
+			if animation.get_parent() != odd_one_out and not pointing_npc_animations.has(animation):
+				turner = animation
+				break
+		if turner == null:
+			continue
+		odd_accuser_animations.erase(turner)
+		pointing_npc_animations.append(turner)
+		_point_npc_at_player(turner)
+		player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
+		_slide_player_seat(pointing_npc_animations.size())
+		dialogue.play_line(pressure_lines[index], -1.0, dialogue.get_speaker_for_character(turner.get_parent()))
+	if not gave_in:
+		gave_in = await _wait_for_accusation(pressure_interval)
+	dialogue.stop_talking()
+	player.free_gesturing_enabled = false
+	phase = &"chapter_end"
+	if gave_in:
+		await _play_ending_one_of_us()
+	else:
+		await _play_ending_alone()
+
+
+func _play_ending_one_of_us() -> void:
+	# Ending B1: the player pointed. The Leader takes Friend's seat, and the player becomes one of them.
+	for animation in pointing_npc_animations:
+		odd_accuser_animations.append(animation)
+	pointing_npc_animations.clear()
+	if not odd_voters.has(player):
+		odd_voters.append(player)
+	odd_votes = odd_voters.size()
+	player.set_pointing_pressure(0, npc_animations.size())
+	_reaim_accusers()
+	_slide_player_seat(0)
+	_exclude(odd_one_out)
+	_point_npc_at(leader_animation, odd_one_out)
+	var leader := leader_animation.get_parent() as Node2D
+	if _friend != null:
+		var glide := create_tween()
+		glide.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		glide.tween_property(leader, "global_position", _seats[_friend], leader_glide_duration)
+		await glide.finished
+	await dialogue.play_line(&"C4OneOfUsNow")
+	await dialogue.wait_until_finished()
+	await _turn_player_into_one_of_them()
+	player.point_at(odd_one_out.global_position)
+	await get_tree().create_timer(1.5).timeout
+	_show_reflection(&"ReflectionOneOfUs")
+
+
+func _turn_player_into_one_of_them() -> void:
+	# Fade to purple, then swap to the NPCs' body color, hands and face.
+	var faces: Node = player.get_node("FaceSprites")
+	var npc_faces: Node = npc_animations[0].get_parent().get_node("FaceSprites") if not npc_animations.is_empty() else null
+	var fade := create_tween()
+	fade.tween_property(player, "modulate", Color(0.75, 0.55, 1.0), 0.6)
+	await fade.finished
+	if player_conform_body != null:
+		faces.body_sprite = player_conform_body
+	if npc_faces != null:
+		faces.face_sprite = npc_faces.face_sprite
+		faces.wavehand_sprite = npc_faces.wavehand_sprite
+		faces.pointhand_sprite = npc_faces.pointhand_sprite
+		faces.peacehand_sprite = npc_faces.peacehand_sprite
+		faces.rocknrollhand_sprite = npc_faces.rocknrollhand_sprite
+		faces.thumbsuphand_sprite = npc_faces.thumbsuphand_sprite
+		faces.fisthand_sprite = npc_faces.fisthand_sprite
+	faces.set_default_face_expression(&"default")
+	var back := create_tween()
+	back.tween_property(player, "modulate", Color.WHITE, 0.6)
+	await back.finished
+
+
+func _play_ending_alone() -> void:
+	# Ending B2: the player held out with nobody beside them, and the group turns on them.
+	for animation in npc_animations:
+		if animation.get_parent() == odd_one_out or pointing_npc_animations.has(animation):
+			continue
+		odd_accuser_animations.erase(animation)
+		pointing_npc_animations.append(animation)
+		_point_npc_at_player(animation)
+		await get_tree().create_timer(hand_lower_interval).timeout
+	_point_npc_at(leader_animation, player)
+	player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
+	_slide_player_seat(pointing_npc_animations.size() + 2)
+	create_tween().tween_property(player, "modulate", excluded_color, excluded_fade_duration)
+	await dialogue.play_line(&"C4NotOneOfUs")
+	await dialogue.wait_until_finished()
+	_show_reflection(&"ReflectionAlone")
+
+
+func _show_reflection(line_name: StringName) -> void:
+	# The ReflectionScreen node lives in Main.tscn under Control, hidden until now.
+	chapter_label.text = ""
+	reflection_screen.show_reflection(String(dialogue.messages.get_message(line_name).get("text", "")))
 
 
 func _wait_for_accusation(seconds: float) -> bool:
@@ -796,6 +1177,15 @@ func _clear_selections() -> void:
 	for selection in get_tree().get_nodes_in_group(&"character_selection"):
 		if selection.get_viewport() == get_viewport():
 			selection.set_selected(false)
+	_update_vote_icons()
+
+
+func _player_target() -> Node:
+	# The player points at whoever has the selection outline.
+	for selection in get_tree().get_nodes_in_group(&"character_selection"):
+		if selection.selected and selection.get_viewport() == get_viewport():
+			return selection.get_parent()
+	return null
 
 
 func _wait_for_click(character: Node, seconds: float = -1.0) -> bool:
@@ -820,9 +1210,15 @@ func _play_gave_in_ending(group: Array[AnimationPlayer]) -> void:
 	player.face_sprites.set_default_face_expression(&"sad_level_2")
 	for animation in friend_animations:
 		animation.get_parent().get_node("FaceSprites").set_default_face_expression(&"sad_level_2")
+	# The player's point, and Friend's after it, are votes too: everyone has voted now.
+	for voter in [player] + friend_animations.map(func(animation): return animation.get_parent()):
+		if not odd_voters.has(voter):
+			odd_voters.append(voter)
+	odd_votes = odd_voters.size()
 	_reaim_accusers()
 	_slide_player_seat(0)
 	_slide_seat(odd_one_out, odd_accuser_animations.size() + 1)
+	_exclude(odd_one_out)
 	await dialogue.play_line(&"GaveInLeader")
 	await dialogue.wait_until_finished()
 	# Only remind the player of being pointed at if it actually happened to them.
@@ -836,6 +1232,8 @@ func _play_held_out_ending(group: Array[AnimationPlayer]) -> void:
 	for animation in friend_animations:
 		odd_accuser_animations.erase(animation)
 		_play_character_pose(animation, &"default")
+	# You stood up for them, so the odd one out is on your side now.
+	odd_one_out.get_node("FaceSprites").become_ally()
 	await dialogue.play_line(&"HeldOutPlayer")
 	await dialogue.wait_until_finished()
 	await dialogue.play_line(&"HeldOutFriend")
@@ -895,6 +1293,7 @@ func _restart_level() -> void:
 			selection.set_selected(false)
 	lane.reset_round()
 	phase = &"leader"
+	_update_vote_icons()
 	set_process(true)
 
 

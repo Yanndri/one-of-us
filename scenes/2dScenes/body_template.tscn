@@ -1163,14 +1163,39 @@ rotation = 1.1990992
 texture = ExtResource("5_it457")
 
 [node name="VoteIcons" type="Node2D" parent="." unique_id=1803092845]
-position = Vector2(-51.000004, -32)
-rotation = -1.150819
+position = Vector2(0, -58)
 script = ExtResource("vote_icons_script")
 
-[node name="VoteIcon" type="Sprite2D" parent="VoteIcons" unique_id=771288744]
+[node name="VoteIcon5th" type="Sprite2D" parent="VoteIcons" unique_id=771288744]
 rotation = 2.3561945
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
+
+[node name="VoteIcon1st" type="Sprite2D" parent="VoteIcons" unique_id=1687552712]
+position = Vector2(-56.396896, 41.679714)
+rotation = 1.2476885
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("5_it457")
+
+[node name="VoteIcon3rd" type="Sprite2D" parent="VoteIcons" unique_id=999773359]
+position = Vector2(-42.396904, 19.679718)
+rotation = 1.62609
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("5_it457")
+
+[node name="VoteIcon2nd" type="Sprite2D" parent="VoteIcons" unique_id=1144744434]
+position = Vector2(57.00993, 44.5349)
+rotation = 5.256807
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("5_it457")
+flip_h = true
+
+[node name="VoteIcon4th" type="Sprite2D" parent="VoteIcons" unique_id=320346634]
+position = Vector2(46.009922, 23.534904)
+rotation = 4.9547396
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("5_it457")
+flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2128615148]
 z_index = -10

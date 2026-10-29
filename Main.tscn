@@ -12,11 +12,17 @@
 [ext_resource type="PackedScene" path="res://scenes/2dScenes/emote_capture.tscn" id="8_capture"]
 [ext_resource type="Texture2D" uid="uid://c3tnqxjs224gl" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_d.svg" id="9_j4qnp"]
 [ext_resource type="Texture2D" uid="uid://cfv0xucxrhhcy" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/mouse_left.svg" id="10_fpfj3"]
+[ext_resource type="Texture2D" uid="uid://bryvq7808sdrs" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_open.png" id="12_3b0ty"]
 [ext_resource type="PackedScene" uid="uid://cump0g5cxd14k" path="res://scenes/2dScenes/friend.tscn" id="13_c6i3y"]
+[ext_resource type="Texture2D" uid="uid://c876nqcbogiv1" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_peace.png" id="14_bg4s2"]
 [ext_resource type="Texture2D" uid="uid://b6sv8rcaucb7r" path="res://assets/ui/leader_gesture_preview.png" id="14_leader_preview"]
 [ext_resource type="Texture2D" uid="uid://cxe36xjc0t3sb" path="res://assets/ui/player_gesture_preview.png" id="15_player_preview"]
 [ext_resource type="Script" uid="uid://c8sc624nn5xp2" path="res://scripts/dialogue.gd" id="16_dialogue"]
+[ext_resource type="Texture2D" uid="uid://ciyp767di2gl" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_clap.png" id="16_hhcpw"]
 [ext_resource type="Script" uid="uid://efsq84sjtwpg" path="res://scripts/messages.gd" id="17_messages"]
+[ext_resource type="Texture2D" uid="uid://48iqbyh0j0pw" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_rock.png" id="18_mxvw5"]
+[ext_resource type="Texture2D" uid="uid://c2cirnodw5elx" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_point.png" id="20_xrxkg"]
+[ext_resource type="PackedScene" uid="uid://bhffg2wv51vj" path="res://scenes/ui/reflection_screen.tscn" id="reflection_screen"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oxdc4"]
 
@@ -270,6 +276,12 @@ layout_mode = 2
 texture = ExtResource("6_5vvyt")
 stretch_mode = 2
 
+[node name="KeyIcon2" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key1" unique_id=2003338511]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("12_3b0ty")
+stretch_mode = 2
+
 [node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key1" unique_id=2037705529]
 layout_mode = 2
 text = "Raise"
@@ -284,6 +296,12 @@ layout_mode = 2
 [node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key2" unique_id=1796915310]
 layout_mode = 2
 texture = ExtResource("7_c6i3y")
+stretch_mode = 2
+
+[node name="KeyIcon2" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key2" unique_id=1533735947]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("14_bg4s2")
 stretch_mode = 2
 
 [node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key2" unique_id=304013649]
@@ -302,6 +320,12 @@ layout_mode = 2
 texture = ExtResource("8_c2ibq")
 stretch_mode = 2
 
+[node name="KeyIcon2" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key3" unique_id=1671008739]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("16_hhcpw")
+stretch_mode = 2
+
 [node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key3" unique_id=428920876]
 layout_mode = 2
 text = "Clap"
@@ -318,6 +342,12 @@ layout_mode = 2
 texture = ExtResource("9_j4qnp")
 stretch_mode = 2
 
+[node name="KeyIcon2" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key4" unique_id=1054048996]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("18_mxvw5")
+stretch_mode = 2
+
 [node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key4" unique_id=2112568159]
 layout_mode = 2
 text = "Rock"
@@ -332,6 +362,12 @@ layout_mode = 2
 [node name="KeyIcon" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key5" unique_id=637895963]
 layout_mode = 2
 texture = ExtResource("10_fpfj3")
+stretch_mode = 2
+
+[node name="KeyIcon2" type="TextureRect" parent="Control/Keyboard/VBoxContainer/key5" unique_id=269560738]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("20_xrxkg")
 stretch_mode = 2
 
 [node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key5" unique_id=639974431]
@@ -427,7 +463,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 script = ExtResource("17_messages")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Control" unique_id=1225985059]
+[node name="ChapterLabel" type="RichTextLabel" parent="Control" unique_id=1225985059]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
@@ -436,3 +472,10 @@ offset_bottom = 48.0
 bbcode_enabled = true
 text = "Chapter [b]1 : [/b][[i]Fitting in"
 fit_content = true
+
+[node name="ReflectionScreen" parent="Control" unique_id=134489204 instance=ExtResource("reflection_screen")]
+visible = false
+z_index = 0
+layout_mode = 1
+
+[editable path="Control/ReflectionScreen"]

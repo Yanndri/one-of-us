@@ -1,0 +1,37 @@
+[gd_resource type="Resource" format=3 uid="uid://41ghhocyw14y"]
+
+[ext_resource type="Script" uid="uid://c6cqbprogj47s" path="res://scripts/rhythm_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://bd1euljevj8kn" path="res://scripts/rhythm_gesture.gd" id="2_gesture"]
+
+[sub_resource type="Resource" id="Gesture1"]
+resource_name = "Gesture1 - hands_up"
+script = ExtResource("2_gesture")
+gesture = "hands_up"
+tick_thickness = 30.0
+position_percent = 25.0
+
+[sub_resource type="Resource" id="Gesture2"]
+resource_name = "Gesture2 - clap"
+script = ExtResource("2_gesture")
+tick_thickness = 30.0
+position_percent = 45.0
+
+[sub_resource type="Resource" id="Gesture3"]
+resource_name = "Gesture3 - rock"
+script = ExtResource("2_gesture")
+gesture = "rock"
+tick_thickness = 30.0
+position_percent = 65.0
+
+[sub_resource type="Resource" id="Gesture4"]
+resource_name = "Gesture4 - peace"
+script = ExtResource("2_gesture")
+gesture = "peace"
+tick_thickness = 30.0
+position_percent = 85.0
+
+[resource]
+resource_name = "Chapter 4 Round 1"
+script = ExtResource("1_level")
+gestures = Array[ExtResource("2_gesture")]([SubResource("Gesture1"), SubResource("Gesture2"), SubResource("Gesture3"), SubResource("Gesture4")])
+bpm = 40.0

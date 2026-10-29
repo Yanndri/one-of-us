@@ -3,6 +3,8 @@ extends CharacterBody2D
 # Plays the player's gestures. RoundController decides whether they are correct.
 # Only scored inputs emit this signal; free gestures after the round do not.
 signal rhythm_action(action: StringName)
+# Emitted whenever the player points at someone with the mouse, or stops pointing (null).
+signal pointed_at(target: Node2D)
 
 # Scored input is enabled only during the response. Free input starts afterward.
 var rhythm_input_enabled: bool = false
@@ -67,6 +69,7 @@ func _point_at_clicked_character(viewport_position: Vector2) -> void:
 			selection.set_selected(selection == target_selection)
 	if target_selection != null:
 		point_at(target_selection.get_parent().global_position)
+	pointed_at.emit(target_selection.get_parent() if target_selection != null else null)
 
 
 func perform_rhythm_action(action: StringName) -> bool:
@@ -75,6 +78,9 @@ func perform_rhythm_action(action: StringName) -> bool:
 	if action != &"rest" and _gesture_locked:
 		return false
 	_gesture_locked = action != &"rest"
+	if action != &"rest":
+		# A gesture drops the pointing hand.
+		pointed_at.emit(null)
 	if pointing_tween and pointing_tween.is_valid():
 		pointing_tween.kill()
 	# Restore the open hands when changing from a pointing pose.
