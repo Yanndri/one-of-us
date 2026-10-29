@@ -24,6 +24,7 @@
 [ext_resource type="Texture2D" uid="uid://qnvsd2x1nagw" path="res://assets/Kenney_Shapes/PNG/Default/face_d.png" id="13_y0m07"]
 [ext_resource type="Texture2D" uid="uid://bnrxben7nexji" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="14_rbvpj"]
 [ext_resource type="Script" uid="uid://dccwfkyc4qwx2" path="res://scripts/character_selection.gd" id="selection_script"]
+[ext_resource type="Script" uid="uid://cxnxcg8xwgycb" path="res://scripts/vote_icons.gd" id="vote_icons_script"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ptkwr"]
 radius = 42.0119
@@ -1159,6 +1160,16 @@ rotation = -0.64143944
 [node name="PointHand" type="Sprite2D" parent="Pointing" unique_id=811569203]
 position = Vector2(44, 30)
 rotation = 1.1990992
+texture = ExtResource("5_it457")
+
+[node name="VoteIcons" type="Node2D" parent="." unique_id=1803092845]
+position = Vector2(-51.000004, -32)
+rotation = -1.150819
+script = ExtResource("vote_icons_script")
+
+[node name="VoteIcon" type="Sprite2D" parent="VoteIcons" unique_id=771288744]
+rotation = 2.3561945
+scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2128615148]

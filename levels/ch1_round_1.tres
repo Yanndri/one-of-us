@@ -6,7 +6,7 @@
 [sub_resource type="Resource" id="Gesture1"]
 resource_name = "Gesture1 - clap"
 script = ExtResource("2_gesture")
-tick_thickness = 24.0
+tick_thickness = 50.0
 position_percent = 75.0
 
 [resource]

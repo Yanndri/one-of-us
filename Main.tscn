@@ -64,6 +64,10 @@ border_color = Color(0.90692437, 0.65850776, 0.89135426, 1)
 script = ExtResource("6_round")
 seat_slide_distance = 10.0
 
+[node name="Friend" parent="." unique_id=1255160976 instance=ExtResource("13_c6i3y")]
+position = Vector2(261, 107.00001)
+rotation = -0.322182
+
 [node name="Player" parent="." unique_id=909801526 instance=ExtResource("5_player")]
 position = Vector2(465, 84)
 
@@ -432,7 +436,3 @@ offset_bottom = 48.0
 bbcode_enabled = true
 text = "Chapter [b]1 : [/b][[i]Fitting in"
 fit_content = true
-
-[node name="Friend" parent="." unique_id=1255160976 instance=ExtResource("13_c6i3y")]
-position = Vector2(261, 107.00001)
-rotation = -0.322182

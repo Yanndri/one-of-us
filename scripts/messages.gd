@@ -183,6 +183,14 @@ var messages: Dictionary = {
 		"wait_time": 4.5,
 		"face": &"sad_level_2",
 	},
+	# Used instead when nobody ever pointed at the player.
+	&"GaveInFriendNeverPointedAt": {
+		"text": "...Imagine if that was [u]you[/u].",
+		"speaker": &"Friend1",
+		"reading_time": 4.0,
+		"wait_time": 4.5,
+		"face": &"sad_level_2",
+	},
 	# The player never pointed.
 	# The player speaks up first, then Friend follows their lead.
 	&"HeldOutPlayer": {
@@ -201,6 +209,69 @@ var messages: Dictionary = {
 	},
 	&"HeldOutHook": {
 		"text": "Didn't point, huh? You're [u]not one of us[/u], [color=#ff5555][shake rate=20 level=6]loser[/shake][/color]!",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+	},
+
+	# --- Chapter 3: Follow My Lead ---
+	&"ChapterThreeIntro": {
+		"text": "Again. And this time, nobody falls behind.",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.0,
+	},
+	# Round 1: Friend messes up, but nobody points yet.
+	&"C3Worried": {
+		"text": "...I can't keep up.",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+		"face": &"sad_level_1",
+	},
+	&"C3FollowMyLead": {
+		"text": "It's okay. Just [u]follow my lead[/u].",
+		"speaker": &"Player1",
+		"reading_time": 3.0,
+		"wait_time": 3.0,
+	},
+	&"C3FriendAgrees": {
+		"text": "...Okay. I'll follow you.",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+	},
+	# Help round: the group heckles while the player leads. Gameplay picks the speaker.
+	&"C3Heckle": {
+		"text": "[color=#ff5555][shake rate=20 level=6]Give up on them.[/shake][/color]",
+		"speaker": &"NPC1",
+		"reading_time": 2.0,
+		"face": &"smug",
+		"face_time": 2.0,
+	},
+	&"C3Again": {
+		"text": "Again. I'm with you.",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+	},
+	# Help round cleared.
+	&"C3Thanks": {
+		"text": "...I did it. Thanks for [u]not leaving me behind[/u].",
+		"speaker": &"Friend1",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+		"face": &"happy",
+		"face_time": 3.0,
+	},
+	&"C3GroupSoftens": {
+		"text": "...Huh. They kept up.",
+		"speaker": &"NPC1",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+	},
+	&"C3LeaderReconsiders": {
+		"text": "Fine. Everyone, [wave amp=30 freq=5]together[/wave].",
 		"speaker": &"Leader",
 		"reading_time": 3.0,
 		"wait_time": 3.5,

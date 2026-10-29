@@ -103,6 +103,11 @@ func plot_player_step(progress: float, action: StringName) -> void:
 	_layout_marks()
 
 
+func travel_width() -> float:
+	# Pixels the markers travel from 0% to 100%, so timing can be drawn to scale.
+	return maxf(size.x - leader_marker.size.x, 0.0)
+
+
 func _layout_marks() -> void:
 	# Normalized progress (0 to 1) lets resizing keep notes and markers aligned.
 	if not is_node_ready():
