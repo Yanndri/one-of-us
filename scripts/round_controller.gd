@@ -54,6 +54,8 @@ var input_window: float = 0.15
 @export var chapter_two_level: RhythmLevel = preload("res://levels/level_02.tres")
 # The NPC who can't keep up, and which beats (0-based) they come in late on.
 @export var odd_one_out_path: NodePath = ^"../NPC3"
+# Pick a random member of the Enemy group to be the odd one out each time Chapter 2 starts (ignores the path above).
+@export var choose_from_enemy_group: bool = true
 @export var odd_one_out_late_on_every_beat: bool = true
 # Only used when the option above is off.
 @export var odd_one_out_late_beats: Array[int] = [1, 3]
@@ -72,6 +74,9 @@ var chapter: int = 1
 var chapter_one_round: int = 0
 # True once every NPC who can accuse is pointing at the player.
 var _singled_out: bool = false
+# Chapter 2 votes against the odd one out. Votes only go up: an NPC can turn to point at the
+# player for a while, but their vote against the odd one out still counts.
+var odd_votes: int = 0
 var odd_one_out: Node2D
 # Chapter 3 can read this: true if the player pointed at the odd one out.
 var gave_in_to_pressure: bool = false
@@ -333,9 +338,9 @@ func _react_to_mistake() -> void:
 	if pointing_npc_animation == null:
 		for index in range(odd_accuser_animations.size() - 1, -1, -1):
 			if not friend_animations.has(odd_accuser_animations[index]):
+				# They turn to the player, but their vote against the odd one out stays.
 				pointing_npc_animation = odd_accuser_animations[index]
 				odd_accuser_animations.remove_at(index)
-				_slide_seat(odd_one_out, odd_accuser_animations.size())
 				break
 	if pointing_npc_animation == null:
 		# Everyone is already pointing. Keep the group and reuse the last speaker.
@@ -452,9 +457,7 @@ func _clear_chapter_two_round() -> void:
 	# The odd one out kept messing up, so one more NPC starts pointing at them.
 	# Once only Friend and the player are left, the group pressures the player.
 	await _add_odd_accuser()
-	var accusers_needed := npc_animations.size() - 1
-	var odd_accusers := odd_accuser_animations.filter(func(animation): return not friend_animations.has(animation)).size()
-	if odd_accusers >= accusers_needed:
+	if odd_votes >= npc_animations.size() - 1:
 		_run_peer_pressure()
 		return
 	# Another round with new random gestures, the same length as the Chapter 2 level.
@@ -463,22 +466,34 @@ func _clear_chapter_two_round() -> void:
 
 
 func _add_odd_accuser() -> void:
+	# One more vote against the odd one out. Then as many NPCs point at them as there are votes,
+	# so NPCs who turned to the player come back (several can come back at once).
 	if odd_one_out == null:
 		return
+	odd_votes = mini(odd_votes + 1, npc_animations.size() - 1)
 	var joiner: AnimationPlayer = null
-	for animation in npc_animations:
-		if animation.get_parent() == odd_one_out or pointing_npc_animations.has(animation) or odd_accuser_animations.has(animation):
-			continue
-		joiner = animation
-		break
-	if joiner == null:
-		return
-	odd_accuser_animations.append(joiner)
-	_point_npc_at(joiner, odd_one_out)
-	_slide_seat(odd_one_out, odd_accuser_animations.size())
-	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"sad_level_1" if odd_accuser_animations.size() < 2 else &"sad_level_2")
-	var line_index := mini(odd_accuser_animations.size() - 1, odd_join_lines.size() - 1)
-	if line_index >= 0:
+	while odd_accuser_animations.size() < odd_votes:
+		var next: AnimationPlayer = null
+		# Prefer an NPC who isn't pointing at anyone, then one who is pointing at the player.
+		for animation in npc_animations:
+			if animation.get_parent() == odd_one_out or pointing_npc_animations.has(animation) or odd_accuser_animations.has(animation):
+				continue
+			next = animation
+			break
+		if next == null and not pointing_npc_animations.is_empty():
+			next = pointing_npc_animations.pop_back()
+		if next == null:
+			break
+		odd_accuser_animations.append(next)
+		if joiner == null:
+			joiner = next
+	player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
+	_slide_player_seat(pointing_npc_animations.size())
+	_reaim_accusers()
+	_slide_seat(odd_one_out, odd_votes)
+	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"sad_level_1" if odd_votes < 2 else &"sad_level_2")
+	var line_index := mini(odd_votes - 1, odd_join_lines.size() - 1)
+	if line_index >= 0 and joiner != null:
 		await dialogue.play_line(odd_join_lines[line_index], -1.0, dialogue.get_speaker_for_character(joiner.get_parent()))
 		await dialogue.wait_until_finished()
 
@@ -499,6 +514,8 @@ func _finish_chapter_one() -> void:
 
 
 func _start_chapter_two() -> void:
+	if choose_from_enemy_group and not npc_animations.is_empty():
+		odd_one_out = npc_animations.pick_random().get_parent() as Node2D
 	if odd_one_out == null or not _load_level(chapter_two_level):
 		push_warning("Chapter 2 needs a level and an odd one out NPC.")
 		return
@@ -536,7 +553,8 @@ func _run_peer_pressure() -> void:
 	await dialogue.wait_until_finished()
 	# An NPC teaches pointing. The countdown only starts once the player has pointed at someone.
 	var teacher: StringName = dialogue.get_speaker_for_character(group[1 % group.size()].get_parent())
-	_clear_selections()
+	# Don't clear selections here: a player who points early, during the accusation line,
+	# should still get a reaction instead of having their click silently erased.
 	dialogue.play_line(&"PointTutorial", -1.0, teacher)
 	var first_target: Node = await _wait_for_any_click(point_tutorial_time)
 	var gave_in := first_target == odd_one_out

@@ -5,18 +5,19 @@ extends Node
 # wait_time pauses an awaiting caller, starting when the line is shown.
 # Optional face: default, happy, angry, sad_level_2.
 # face_time is seconds from line start; omit it to keep the face until the line ends.
+# Text can use BBCode: bold, italic, [color=red]red[/color], [wave]wave[/wave], [shake]shake[/shake].
 
 #await dialogue.play_line(&"NPCAccusation", -1.0, speaker)
 var messages: Dictionary = {
 	# Friend introduces the leader's demonstration.
 	&"Introduction": {
-		"text": "Watch him first. Then we'll copy his moves together.",
+		"text": "[u]Watch[/u] him first. Then we'll [u]copy[/u] his moves together.",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.0,
 	},
 	&"YourTurn": {
-		"text": "Your turn!",
+		"text": "[wave amp=30 freq=5]Your turn![/wave]",
 		"speaker": &"Leader",
 		"reading_time": 1.2,
 		"wait_time": 2.0,
@@ -32,7 +33,7 @@ var messages: Dictionary = {
 	# Failure exchange: the pointing NPC speaks, then Friend defends the player.
 	# Gameplay replaces NPC1 with whichever NPC is actually pointing.
 	&"NPCAccusation": {
-		"text": "Hey you're messing up!",
+		"text": "Hey, you're [color=#ff5555][shake rate=20 level=6]messing up[/shake][/color]!",
 		"speaker": &"NPC1",
 		"reading_time": 2.0,
 		"wait_time": 3.5,
@@ -40,7 +41,7 @@ var messages: Dictionary = {
 		"face_time": 3.0,
 	},
 	&"FriendDefense": {
-		"text": "Hey he's new don't shame him!",
+		"text": "Hey, he's new! Don't [u]shame[/u] him!",
 		"speaker": &"Friend1",
 		"reading_time": 3.0,
 		"wait_time": 3.5,
@@ -48,7 +49,7 @@ var messages: Dictionary = {
 		"face_time": 3.2,
 	},
 	&"TryAgain": {
-		"text": "It's okay. Watch the timing - we'll try again.",
+		"text": "It's okay. Watch the [u]timing[/u] - we'll try again.",
 		"speaker": &"Friend1",
 		"reading_time": 3.0,
 		"wait_time": 3.5,
@@ -56,13 +57,13 @@ var messages: Dictionary = {
 
 	# Chapter 1 round lines. RoundController picks which round each one plays on.
 	&"Ch1Round2": {
-		"text": "Faster!",
+		"text": "[shake rate=25 level=8]Faster![/shake]",
 		"speaker": &"Leader",
 		"reading_time": 1.5,
 		"wait_time": 1.5,
 	},
 	&"Ch1Round3": {
-		"text": "Let's make this more difficult.",
+		"text": "Let's make this more [u]difficult[/u].",
 		"speaker": &"Leader",
 		"reading_time": 2.5,
 		"wait_time": 2.5,
@@ -70,7 +71,7 @@ var messages: Dictionary = {
 		"face_time": 2.5,
 	},
 	&"Ch1Round3Cleared": {
-		"text": "Wow, you're doing good!",
+		"text": "Wow, you're doing [wave amp=30 freq=5]good[/wave]!",
 		"speaker": &"Friend1",
 		"reading_time": 2.5,
 		"wait_time": 2.5,
@@ -81,7 +82,7 @@ var messages: Dictionary = {
 	# Chapter 1: after each cleared round, one more NPC points at the odd one out.
 	# Gameplay replaces the speaker with the NPC who starts pointing.
 	&"OddJoin1": {
-		"text": "Ugh. They messed up.",
+		"text": "Ugh. They [color=#ff5555][shake rate=20 level=6]messed up[/shake][/color].",
 		"speaker": &"NPC1",
 		"reading_time": 2.5,
 		"wait_time": 2.5,
@@ -89,7 +90,7 @@ var messages: Dictionary = {
 		"face_time": 2.5,
 	},
 	&"OddJoin2": {
-		"text": "Every single time.",
+		"text": "Every [u]single[/u] time.",
 		"speaker": &"NPC2",
 		"reading_time": 2.5,
 		"wait_time": 2.5,
@@ -97,14 +98,14 @@ var messages: Dictionary = {
 		"face_time": 2.5,
 	},
 	&"OddJoin3": {
-		"text": "...Yeah. I see it too.",
+		"text": "...Yeah. I noticed they're [color=#ff5555][shake rate=20 level=6]messing up[/shake][/color]!",
 		"speaker": &"NPC4",
 		"reading_time": 2.5,
 		"wait_time": 2.5,
 	},
 	# Everyone who can accuse is pointing at the player.
 	&"GameOver": {
-		"text": "That's it. You're not one of us.",
+		"text": "That's it. You're [color=#ff5555]not one of us[/color].",
 		"speaker": &"Leader",
 		"reading_time": 3.0,
 		"wait_time": 3.5,
@@ -114,14 +115,14 @@ var messages: Dictionary = {
 
 	# --- Chapter 2: The Odd One Out ---
 	&"ChapterTwoIntro": {
-		"text": "New pattern. Keep up this time, everyone.",
+		"text": "Alright, good. All of you are [u]great followers[/u]. Let's keep going.",
 		"speaker": &"Leader",
 		"reading_time": 3.0,
 		"wait_time": 3.0,
 	},
 	# Gameplay replaces NPC1 with whichever NPC speaks first.
 	&"OddAccusation": {
-		"text": "Did you see that? They're always behind.",
+		"text": "Did you see that? They're [color=#ff5555][shake rate=20 level=6]always behind[/shake][/color].",
 		"speaker": &"NPC1",
 		"reading_time": 2.5,
 		"wait_time": 3.0,
@@ -131,14 +132,14 @@ var messages: Dictionary = {
 	# An NPC teaches pointing; the game waits until the player clicks anyone.
 	# Gameplay replaces the speaker with a pointing NPC. reading_time keeps the hint up.
 	&"PointTutorial": {
-		"text": "Hey New kid! Point at this loser by left clicking on them.",
+		"text": "Hey, new kid! Point at this [color=#ff5555][shake rate=20 level=6]loser[/shake][/color] by [pulse freq=2.0 color=#ffffff40]left clicking[/pulse] on them.",
 		"speaker": &"NPC2",
 		"reading_time": 60.0,
 		"face": &"smug",
 		"face_time": 2.5,
 	},
 	&"PointThemOut": {
-		"text": "Hey! You're pointing at the wrong person",
+		"text": "Hey! You're pointing at the [u]wrong person[/u]!",
 		"speaker": &"Leader",
 		"reading_time": 5.5,
 		"wait_time": 5.5,
@@ -153,14 +154,14 @@ var messages: Dictionary = {
 		"face_time": 2.0,
 	},
 	&"Pressure2": {
-		"text": "Everyone's doing it.",
+		"text": "[u]Everyone's[/u] doing it.",
 		"speaker": &"NPC2",
 		"reading_time": 2.0,
 		"face": &"angry",
 		"face_time": 2.0,
 	},
 	&"Pressure3": {
-		"text": "...Unless you're also a loser?",
+		"text": "...Unless you're also a [color=#ff5555][shake rate=20 level=6]loser[/shake][/color]?",
 		"speaker": &"NPC4",
 		"reading_time": 2.5,
 		"face": &"smug_2",
@@ -168,7 +169,7 @@ var messages: Dictionary = {
 	},
 	# The player pointed at the odd one out.
 	&"GaveInLeader": {
-		"text": "Good. Now you're one of us.",
+		"text": "Good. Now you're [u]one of us[/u].",
 		"speaker": &"Leader",
 		"reading_time": 2.5,
 		"wait_time": 3.0,
@@ -176,7 +177,7 @@ var messages: Dictionary = {
 		"face_time": 2.5,
 	},
 	&"GaveInFriend": {
-		"text": "...We just did what they did to you.",
+		"text": "...We just did what they did to [u]you[/u].",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.5,
@@ -185,13 +186,13 @@ var messages: Dictionary = {
 	# The player never pointed.
 	# The player speaks up first, then Friend follows their lead.
 	&"HeldOutPlayer": {
-		"text": "I'm not pointing at them.",
+		"text": "I'm [u]not[/u] pointing at them.",
 		"speaker": &"Player1",
 		"reading_time": 2.5,
 		"wait_time": 3.0,
 	},
 	&"HeldOutFriend": {
-		"text": "Then I won't either.",
+		"text": "Then I [u]won't[/u] either.",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.5,
@@ -199,7 +200,7 @@ var messages: Dictionary = {
 		"face_time": 3.0,
 	},
 	&"HeldOutHook": {
-		"text": "Didn't point huh, you're not one of us loser!",
+		"text": "Didn't point, huh? You're [u]not one of us[/u], [color=#ff5555][shake rate=20 level=6]loser[/shake][/color]!",
 		"speaker": &"Leader",
 		"reading_time": 3.0,
 		"wait_time": 3.5,

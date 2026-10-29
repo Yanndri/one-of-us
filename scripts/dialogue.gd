@@ -41,6 +41,9 @@ var _face_time_remaining: float = -1.0
 
 
 func _ready() -> void:
+	# Lines in messages.gd can use BBCode, e.g. [color=red]red[/color], [shake]shake[/shake], [wave]wave[/wave].
+	# The typewriter reveals only the visible letters, so tags never show while typing.
+	dialogue_text.bbcode_enabled = true
 	stop_talking()
 
 

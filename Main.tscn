@@ -199,11 +199,12 @@ mouse_filter = 2
 color = Color(0.61840063, 0.21029416, 1, 1)
 
 [node name="Action" type="RichTextLabel" parent="Control/RhythmLane/LeaderStepTemplate" unique_id=1335177020]
+clip_contents = false
 layout_mode = 0
-offset_left = -40.0
+offset_left = -59.0
 offset_top = 50.0
-offset_right = 40.0
-offset_bottom = 73.0
+offset_right = 61.0
+offset_bottom = 74.0
 text = "CLAP"
 fit_content = true
 scroll_active = false
@@ -267,7 +268,7 @@ stretch_mode = 2
 
 [node name="GestureLabel" type="RichTextLabel" parent="Control/Keyboard/VBoxContainer/key1" unique_id=2037705529]
 layout_mode = 2
-text = "Hands Up"
+text = "Raise"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0

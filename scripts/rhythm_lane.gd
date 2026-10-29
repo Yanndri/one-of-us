@@ -11,6 +11,9 @@ extends Control
 @onready var leader_step_template: Control = $LeaderStepTemplate
 @onready var player_step_template: Control = $PlayerStepTemplate
 
+# On-screen names for gestures whose internal name reads differently.
+const ACTION_LABELS: Dictionary = {&"hands_up": "Raise"}
+
 var leader_progress: float = 0.0
 var player_progress: float = 0.0
 var pose_textures: Dictionary = {}
@@ -67,7 +70,7 @@ func plot_step(index: int, progress: float, action: StringName, tick_thickness: 
 	step_plots.add_child(step)
 	step.show()
 	step.get_node("Emote").texture = pose_textures.get(action)
-	step.get_node("Action").text = str(action).replace("_", " ").to_upper()
+	step.get_node("Action").text = str(ACTION_LABELS.get(action, str(action).replace("_", " "))).to_upper()
 	# Per-gesture width comes from Level. Keep its center on the timing position.
 	var tick := step.get_node("Tick") as Control
 	var center_x := tick.position.x + tick.size.x * 0.5
