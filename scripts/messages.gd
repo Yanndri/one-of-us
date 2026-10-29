@@ -54,6 +54,64 @@ var messages: Dictionary = {
 		"wait_time": 3.5,
 	},
 
+	# Chapter 1 round lines. RoundController picks which round each one plays on.
+	&"Ch1Round2": {
+		"text": "Faster!",
+		"speaker": &"Leader",
+		"reading_time": 1.5,
+		"wait_time": 1.5,
+	},
+	&"Ch1Round3": {
+		"text": "Let's make this more difficult.",
+		"speaker": &"Leader",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+		"face": &"smug",
+		"face_time": 2.5,
+	},
+	&"Ch1Round3Cleared": {
+		"text": "Wow, you're doing good!",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+		"face": &"happy",
+		"face_time": 2.5,
+	},
+
+	# Chapter 1: after each cleared round, one more NPC points at the odd one out.
+	# Gameplay replaces the speaker with the NPC who starts pointing.
+	&"OddJoin1": {
+		"text": "Ugh. They messed up.",
+		"speaker": &"NPC1",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+		"face": &"smug",
+		"face_time": 2.5,
+	},
+	&"OddJoin2": {
+		"text": "Every single time.",
+		"speaker": &"NPC2",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+		"face": &"smug",
+		"face_time": 2.5,
+	},
+	&"OddJoin3": {
+		"text": "...Yeah. I see it too.",
+		"speaker": &"NPC4",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+	},
+	# Everyone who can accuse is pointing at the player.
+	&"GameOver": {
+		"text": "That's it. You're not one of us.",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+		"face": &"smug",
+		"face_time": 3.0,
+	},
+
 	# --- Chapter 2: The Odd One Out ---
 	&"ChapterTwoIntro": {
 		"text": "New pattern. Keep up this time, everyone.",
@@ -125,8 +183,15 @@ var messages: Dictionary = {
 		"face": &"sad_level_2",
 	},
 	# The player never pointed.
+	# The player speaks up first, then Friend follows their lead.
+	&"HeldOutPlayer": {
+		"text": "I'm not pointing at them.",
+		"speaker": &"Player1",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+	},
 	&"HeldOutFriend": {
-		"text": "...You're right. This isn't us.",
+		"text": "Then I won't either.",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.5,

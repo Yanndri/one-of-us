@@ -5,9 +5,6 @@ extends Node
 
 const RhythmLevel = preload("res://scripts/rhythm_level.gd")
 
-# Expand Level in the Inspector to edit the sequence and timing together.
-@export var level: RhythmLevel = preload("res://levels/level_01.tres")
-
 # Copy the level settings at startup so the round uses one consistent setup.
 var pattern: Array[StringName] = []
 var gesture_positions: Array[float] = []
@@ -29,6 +26,29 @@ var input_window: float = 0.15
 @export var seat_slide_distance: float = 40.0
 @export var seat_slide_duration: float = 0.6
 
+@export_group("Chapter 1")
+# Hand-made rounds, in order. Edit these .tres files to set gestures and positions yourself.
+# Clear a slot (or make the list shorter) to let that round pick random gestures instead.
+@export var chapter_one_levels: Array[RhythmLevel] = [
+	preload("res://levels/ch1_round_1.tres"),
+	preload("res://levels/ch1_round_2.tres"),
+	preload("res://levels/ch1_round_3.tres"),
+	preload("res://levels/ch1_round_4.tres"),
+]
+# Gestures per random round, used only for empty slots above.
+@export var chapter_one_rounds: Array[int] = [1, 1, 2, 2]
+# Random gestures land in this part of the timeline, so the first half is for getting ready.
+@export_range(0.0, 1.0, 0.05) var random_position_min: float = 0.55
+@export_range(0.0, 1.0, 0.05) var random_position_max: float = 0.95
+# Smallest gap between two gestures in one round, as a share of the timeline.
+@export_range(0.05, 0.5, 0.05) var random_min_gap: float = 0.2
+# One line per NPC that starts pointing at the odd one out, in order. Edit them in messages.gd.
+@export var odd_join_lines: Array[StringName] = [&"OddJoin1", &"OddJoin2", &"OddJoin3"]
+# Optional line before each Chapter 1 round starts (round 1 first). Leave a slot empty for silence.
+@export var chapter_one_round_lines: Array[StringName] = [&"", &"Ch1Round2", &"Ch1Round3", &""]
+# Optional line after each Chapter 1 round is cleared (round 1 first).
+@export var chapter_one_cleared_lines: Array[StringName] = [&"", &"", &"Ch1Round3Cleared", &""]
+
 @export_group("Chapter 2")
 # Chapter 2 swaps in this level after a clean Chapter 1 round.
 @export var chapter_two_level: RhythmLevel = preload("res://levels/level_02.tres")
@@ -46,7 +66,12 @@ var input_window: float = 0.15
 @export var pressure_lines: Array[StringName] = [&"Pressure1", &"Pressure2", &"Pressure3"]
 @export_group("")
 
+const RANDOM_GESTURES: Array[StringName] = [&"clap", &"peace", &"hands_up", &"rock"]
+
 var chapter: int = 1
+var chapter_one_round: int = 0
+# True once every NPC who can accuse is pointing at the player.
+var _singled_out: bool = false
 var odd_one_out: Node2D
 # Chapter 3 can read this: true if the player pointed at the odd one out.
 var gave_in_to_pressure: bool = false
@@ -73,8 +98,6 @@ var _seats: Dictionary = {}
 func _ready() -> void:
 	# Find followers in Main. Friend follows the moves but never accuses the player.
 	set_process(false)
-	if not _load_level(level):
-		return
 	for character in get_parent().get_children():
 		if character.is_in_group("Enemy") or character.is_in_group("Friend"):
 			var animation := character.get_node_or_null("AnimationPlayer") as AnimationPlayer
@@ -88,6 +111,7 @@ func _ready() -> void:
 		var character := animation.get_parent() as Node2D
 		_seats[character] = character.global_position
 	odd_one_out = get_node_or_null(odd_one_out_path) as Node2D
+	_load_chapter_one_round(0)
 	_play_pose(&"default")
 	player.rhythm_action.connect(_on_rhythm_action)
 	if not lane.is_node_ready():
@@ -129,6 +153,38 @@ func _load_level(new_level: RhythmLevel) -> bool:
 	results.resize(pattern.size())
 	results.fill("pending")
 	return true
+
+
+func _load_random_round(count: int) -> void:
+	# New random gestures and positions, all after random_position_min so the player can prepare.
+	var previous_pattern := pattern.duplicate()
+	var previous_positions := gesture_positions.duplicate()
+	var choices := RANDOM_GESTURES.duplicate()
+	choices.shuffle()
+	if count == 1 and previous_pattern.size() == 1:
+		# A one-gesture round always changes gesture from the round before.
+		choices.erase(previous_pattern[0])
+	pattern.clear()
+	gesture_positions.clear()
+	gesture_tick_widths.clear()
+	var earliest := random_position_min
+	for index in count:
+		pattern.append(choices[index % choices.size()])
+		# Leave room for the gestures still to come.
+		var latest := random_position_max - random_min_gap * (count - 1 - index)
+		var position := randf_range(earliest, latest)
+		if count == 1 and previous_positions.size() == 1:
+			# Move a single gesture to a clearly different spot on the timeline.
+			for attempt in 10:
+				if absf(position - previous_positions[0]) >= random_min_gap * 0.5:
+					break
+				position = randf_range(earliest, latest)
+		gesture_positions.append(position)
+		gesture_tick_widths.append(24.0)
+		earliest = position + random_min_gap
+	pass_duration = pattern.size() * 60.0 / bpm
+	results.resize(pattern.size())
+	results.fill("pending")
 
 
 func _process(delta: float) -> void:
@@ -201,9 +257,9 @@ func _process(delta: float) -> void:
 		else:
 			_forgive_one_accuser()
 			if chapter == 1:
-				_finish_chapter_one()
+				_clear_chapter_one_round()
 			else:
-				_run_peer_pressure()
+				_clear_chapter_two_round()
 		return
 
 
@@ -267,23 +323,31 @@ func _react_to_mistake() -> void:
 	if phase != &"finished" or _reacted_this_attempt:
 		return
 	_reacted_this_attempt = true
-	# Add exactly one new accuser per failed attempt, excluding Friend.
+	# Add exactly one new accuser per failed attempt, excluding Friend and the odd one out.
+	# NPCs who aren't pointing at anyone turn first; after that, NPCs turn away from the odd one out.
 	for animation in npc_animations:
-		# The odd one out is struggling too, so they never accuse the player.
-		if chapter == 2 and animation.get_parent() == odd_one_out:
+		if (chapter >= 2 and animation.get_parent() == odd_one_out) or pointing_npc_animations.has(animation) or odd_accuser_animations.has(animation):
 			continue
-		if not pointing_npc_animations.has(animation):
-			pointing_npc_animation = animation
-			pointing_npc_animations.append(animation)
-			player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
-			break
+		pointing_npc_animation = animation
+		break
+	if pointing_npc_animation == null:
+		for index in range(odd_accuser_animations.size() - 1, -1, -1):
+			if not friend_animations.has(odd_accuser_animations[index]):
+				pointing_npc_animation = odd_accuser_animations[index]
+				odd_accuser_animations.remove_at(index)
+				_slide_seat(odd_one_out, odd_accuser_animations.size())
+				break
 	if pointing_npc_animation == null:
 		# Everyone is already pointing. Keep the group and reuse the last speaker.
 		if not pointing_npc_animations.is_empty():
 			pointing_npc_animation = pointing_npc_animations.back()
 		return
+	pointing_npc_animations.append(pointing_npc_animation)
+	player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
 	_point_npc_at_player(pointing_npc_animation)
 	_slide_player_seat(pointing_npc_animations.size())
+	# Singled out: every NPC who can accuse is now pointing at the player.
+	_singled_out = pointing_npc_animations.size() >= npc_animations.size() - (1 if chapter >= 2 and odd_one_out != null else 0)
 
 
 func _forgive_one_accuser() -> void:
@@ -345,6 +409,89 @@ func _play_late_pose(animation: StringName) -> void:
 		_play_character_pose(odd_animation, animation)
 
 
+func _clear_chapter_one_round() -> void:
+	await _play_optional_line(chapter_one_cleared_lines, chapter_one_round)
+	chapter_one_round += 1
+	if chapter_one_round >= _chapter_one_round_count():
+		_finish_chapter_one()
+		return
+	_load_chapter_one_round(chapter_one_round)
+	await _play_optional_line(chapter_one_round_lines, chapter_one_round)
+	_restart_level()
+
+
+func _play_optional_line(lines: Array[StringName], index: int) -> void:
+	if index < lines.size() and lines[index] != &"":
+		await dialogue.play_line(lines[index])
+		await dialogue.wait_until_finished()
+
+
+func _chapter_one_round_count() -> int:
+	return maxi(chapter_one_levels.size(), chapter_one_rounds.size())
+
+
+func _load_chapter_one_round(index: int) -> void:
+	# A level in Chapter One Levels sets the round by hand; an empty slot picks random gestures.
+	if index < chapter_one_levels.size() and chapter_one_levels[index] != null:
+		if _load_level(chapter_one_levels[index]):
+			return
+	# A random round keeps the tempo, start delay and input window of the round before it.
+	# The first round borrows them from the first hand-made round, if there is one.
+	if index == 0:
+		for chapter_level in chapter_one_levels:
+			if chapter_level != null:
+				bpm = chapter_level.bpm
+				start_delay = chapter_level.start_delay
+				input_window = chapter_level.input_window
+				break
+	var count := chapter_one_rounds[index] if index < chapter_one_rounds.size() else 1
+	_load_random_round(count)
+
+
+func _clear_chapter_two_round() -> void:
+	# The odd one out kept messing up, so one more NPC starts pointing at them.
+	# Once only Friend and the player are left, the group pressures the player.
+	await _add_odd_accuser()
+	var accusers_needed := npc_animations.size() - 1
+	var odd_accusers := odd_accuser_animations.filter(func(animation): return not friend_animations.has(animation)).size()
+	if odd_accusers >= accusers_needed:
+		_run_peer_pressure()
+		return
+	# Another round with new random gestures, the same length as the Chapter 2 level.
+	_load_random_round(pattern.size())
+	_restart_level()
+
+
+func _add_odd_accuser() -> void:
+	if odd_one_out == null:
+		return
+	var joiner: AnimationPlayer = null
+	for animation in npc_animations:
+		if animation.get_parent() == odd_one_out or pointing_npc_animations.has(animation) or odd_accuser_animations.has(animation):
+			continue
+		joiner = animation
+		break
+	if joiner == null:
+		return
+	odd_accuser_animations.append(joiner)
+	_point_npc_at(joiner, odd_one_out)
+	_slide_seat(odd_one_out, odd_accuser_animations.size())
+	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"sad_level_1" if odd_accuser_animations.size() < 2 else &"sad_level_2")
+	var line_index := mini(odd_accuser_animations.size() - 1, odd_join_lines.size() - 1)
+	if line_index >= 0:
+		await dialogue.play_line(odd_join_lines[line_index], -1.0, dialogue.get_speaker_for_character(joiner.get_parent()))
+		await dialogue.wait_until_finished()
+
+
+func _game_over() -> void:
+	# The player has been singled out. Show it, then start the game again.
+	phase = &"game_over"
+	chapter_label.text = "[b]Game Over"
+	await dialogue.play_line(&"GameOver")
+	await dialogue.wait_until_finished()
+	get_tree().reload_current_scene()
+
+
 func _finish_chapter_one() -> void:
 	await dialogue.play_line(&"Success")
 	await dialogue.wait_until_finished()
@@ -376,12 +523,14 @@ func _run_peer_pressure() -> void:
 	for animation in npc_animations:
 		if animation != odd_animation:
 			group.append(animation)
-	# Even Friend joins in, so the player has nobody to copy. Friend never turns on the player.
-	odd_accuser_animations = group + friend_animations
+	# Friend waits to see what the player does, and only points if the player does.
+	odd_accuser_animations = group.duplicate()
+	for animation in friend_animations:
+		_play_character_pose(animation, &"default")
 	_play_character_pose(odd_animation, &"default")
 	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"sad_level_2")
 	_reaim_accusers()
-	_slide_seat(odd_one_out, 1)
+	_slide_seat(odd_one_out, odd_accuser_animations.size())
 	var first_speaker: StringName = dialogue.get_speaker_for_character(group[0].get_parent())
 	await dialogue.play_line(&"OddAccusation", -1.0, first_speaker)
 	await dialogue.wait_until_finished()
@@ -459,11 +608,16 @@ func _wait_for_click(character: Node, seconds: float = -1.0) -> bool:
 
 func _play_gave_in_ending(group: Array[AnimationPlayer]) -> void:
 	# The group got what it wanted: everyone points at the odd one out, who slides further out.
+	# Friend follows the player's lead and points too. Neither of them feels good about it.
 	pointing_npc_animations.clear()
 	odd_accuser_animations = group + friend_animations
 	player.set_pointing_pressure(0, npc_animations.size())
+	player.face_sprites.set_default_face_expression(&"sad_level_2")
+	for animation in friend_animations:
+		animation.get_parent().get_node("FaceSprites").set_default_face_expression(&"sad_level_2")
+	_reaim_accusers()
 	_slide_player_seat(0)
-	_slide_seat(odd_one_out, 3)
+	_slide_seat(odd_one_out, odd_accuser_animations.size() + 1)
 	await dialogue.play_line(&"GaveInLeader")
 	await dialogue.wait_until_finished()
 	await dialogue.play_line(&"GaveInFriend")
@@ -476,6 +630,8 @@ func _play_held_out_ending(group: Array[AnimationPlayer]) -> void:
 	for animation in friend_animations:
 		odd_accuser_animations.erase(animation)
 		_play_character_pose(animation, &"default")
+	await dialogue.play_line(&"HeldOutPlayer")
+	await dialogue.wait_until_finished()
 	await dialogue.play_line(&"HeldOutFriend")
 	await dialogue.wait_until_finished()
 	pointing_npc_animations.clear()
@@ -499,6 +655,9 @@ func _play_failure_dialogue() -> void:
 		if speaker != &"":
 			await dialogue.play_line(&"NPCAccusation", -1.0, speaker)
 			await dialogue.wait_until_finished()
+	if _singled_out:
+		await _game_over()
+		return
 	# Friend defends the newcomer on the first failure only, not every retry.
 	if not _friend_defense_played:
 		_friend_defense_played = true
@@ -542,6 +701,9 @@ func _play_followers_pose(animation: StringName) -> void:
 	for npc_animation in npc_animations:
 		if phase != &"response" and pointing_npc_animations.has(npc_animation):
 			_point_npc_at_player(npc_animation)
+			continue
+		if phase != &"response" and odd_accuser_animations.has(npc_animation):
+			_point_npc_at(npc_animation, odd_one_out)
 			continue
 		_play_character_pose(npc_animation, animation)
 	# Friend uses the same timing and their own color-matched gesture textures.

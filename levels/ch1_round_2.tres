@@ -1,0 +1,16 @@
+[gd_resource type="Resource" format=3 uid="uid://cl1y48i2f4qtp"]
+
+[ext_resource type="Script" uid="uid://c6cqbprogj47s" path="res://scripts/rhythm_level.gd" id="1_level"]
+[ext_resource type="Script" uid="uid://bd1euljevj8kn" path="res://scripts/rhythm_gesture.gd" id="2_gesture"]
+
+[sub_resource type="Resource" id="Gesture1"]
+resource_name = "Gesture1 - peace"
+script = ExtResource("2_gesture")
+tick_thickness = 24.0
+position_percent = 60.0
+
+[resource]
+resource_name = "Chapter 1 Round 2"
+script = ExtResource("1_level")
+gestures = Array[ExtResource("2_gesture")]([SubResource("Gesture1")])
+bpm = 35.0
