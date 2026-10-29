@@ -94,6 +94,18 @@ extends Node
 @export var ally_rocknrollhand_sprite: Texture2D
 @export var ally_thumbsuphand_sprite: Texture2D
 @export var ally_fisthand_sprite: Texture2D
+
+@export_group("Conform")
+# The look this character switches to when they give in and become "one of us".
+# Leave a slot empty to keep that texture as it is.
+@export var conform_body_sprite: Texture2D
+@export var conform_face_sprite: Texture2D
+@export var conform_wavehand_sprite: Texture2D
+@export var conform_pointhand_sprite: Texture2D
+@export var conform_peacehand_sprite: Texture2D
+@export var conform_rocknrollhand_sprite: Texture2D
+@export var conform_thumbsuphand_sprite: Texture2D
+@export var conform_fisthand_sprite: Texture2D
 @export_group("")
 
 var is_ally: bool = false
@@ -225,3 +237,24 @@ func become_ally() -> void:
 		thumbsuphand_sprite = ally_thumbsuphand_sprite
 	if ally_fisthand_sprite != null:
 		fisthand_sprite = ally_fisthand_sprite
+
+
+func become_conformed() -> void:
+	# Swap to the Conform textures set in the Inspector.
+	if conform_body_sprite != null:
+		body_sprite = conform_body_sprite
+	if conform_face_sprite != null:
+		face_sprite = conform_face_sprite
+	if conform_wavehand_sprite != null:
+		wavehand_sprite = conform_wavehand_sprite
+	if conform_pointhand_sprite != null:
+		pointhand_sprite = conform_pointhand_sprite
+	if conform_peacehand_sprite != null:
+		peacehand_sprite = conform_peacehand_sprite
+	if conform_rocknrollhand_sprite != null:
+		rocknrollhand_sprite = conform_rocknrollhand_sprite
+	if conform_thumbsuphand_sprite != null:
+		thumbsuphand_sprite = conform_thumbsuphand_sprite
+	if conform_fisthand_sprite != null:
+		fisthand_sprite = conform_fisthand_sprite
+	set_default_face_expression(&"default")

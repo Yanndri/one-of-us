@@ -264,7 +264,22 @@ var messages: Dictionary = {
 		"face": &"smug",
 		"face_time": 8.0,
 	},
-	# The player held out, but everyone ended up pointing at them: Game Over.
+	# The player held out and everyone is pointing at them: they ask for one last try.
+	&"C3OneMoreChance": {
+		"text": "Give them [u]one more chance[/u].",
+		"speaker": &"Player1",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+	},
+	&"C3LastChance": {
+		"text": "[color=#ff5555][shake rate=20 level=6]One.[/shake][/color] More.",
+		"speaker": &"Leader",
+		"reading_time": 2.0,
+		"wait_time": 2.5,
+		"face": &"angry",
+		"face_time": 2.0,
+	},
+	# The last chance failed too: Game Over.
 	&"C3SingledOutForFriend": {
 		"text": "You stood by them... and now [color=#ff5555][shake rate=20 level=6]you're[/shake][/color] the one outside.",
 		"speaker": &"Leader",

@@ -19,7 +19,7 @@ position_percent = 60.0
 [sub_resource type="Resource" id="Gesture3"]
 resource_name = "Gesture3 - rock"
 script = ExtResource("2_gesture")
-gesture = "rock"
+gesture = "hands_up"
 tick_thickness = 30.0
 position_percent = 80.0
 

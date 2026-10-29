@@ -6,7 +6,6 @@
 [sub_resource type="Resource" id="Gesture1"]
 resource_name = "Gesture1 - rock"
 script = ExtResource("2_gesture")
-gesture = "rock"
 tick_thickness = 30.0
 position_percent = 25.0
 
@@ -34,4 +33,4 @@ position_percent = 85.0
 resource_name = "Chapter 3 Round 3 (help round)"
 script = ExtResource("1_level")
 gestures = Array[ExtResource("2_gesture")]([SubResource("Gesture1"), SubResource("Gesture2"), SubResource("Gesture3"), SubResource("Gesture4")])
-bpm = 36.0
+bpm = 25.0

@@ -23,6 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://itmogmsk2rwb" path="res://assets/Kenney_Shapes/PNG/Default/face_e.png" id="12_ot5sf"]
 [ext_resource type="Texture2D" uid="uid://qnvsd2x1nagw" path="res://assets/Kenney_Shapes/PNG/Default/face_d.png" id="13_y0m07"]
 [ext_resource type="Texture2D" uid="uid://bnrxben7nexji" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="14_rbvpj"]
+[ext_resource type="AudioStream" uid="uid://x38sqdbo1bvg" path="res://assets/music/soundreality-finger-snap-sound-423220.mp3" id="25_0osg4"]
 [ext_resource type="Script" uid="uid://dccwfkyc4qwx2" path="res://scripts/character_selection.gd" id="selection_script"]
 [ext_resource type="Script" uid="uid://cxnxcg8xwgycb" path="res://scripts/vote_icons.gd" id="vote_icons_script"]
 
@@ -856,6 +857,21 @@ tracks/8/keys = {
 "update": 0,
 "values": [-2.5488782, -3.8345356]
 }
+tracks/9/type = "audio"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("AudioStreamPlayer2D")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"clips": [{
+"end_offset": 1.1109,
+"start_offset": 0.1033,
+"stream": ExtResource("25_0osg4")
+}],
+"times": PackedFloat32Array(0.16666667)
+}
+tracks/9/use_blend = true
 
 [sub_resource type="Animation" id="Animation_v4e37"]
 resource_name = "pointing"
@@ -923,7 +939,7 @@ tracks/4/keys = {
 
 [sub_resource type="Animation" id="Animation_amm4j"]
 resource_name = "rock"
-length = 0.6
+length = 0.7
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -991,7 +1007,7 @@ tracks/5/path = NodePath("RightArmPivot:rotation")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.43333334, 0.46666667),
+"times": PackedFloat32Array(0, 0.3, 0.53333336, 0.6),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
 "values": [0.0, -1.1533607, -1.1533607, -0.49024487]
@@ -1003,11 +1019,30 @@ tracks/6/path = NodePath("LeftArmPivot:rotation")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.43333334, 0.46666667),
+"times": PackedFloat32Array(0, 0.3, 0.53333336, 0.6),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
 "values": [0.0, 1.4015322, 1.4015322, 0.66372484]
 }
+tracks/7/type = "audio"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("AudioStreamPlayer2D")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"clips": [{
+"end_offset": 0.429,
+"start_offset": 0.1711,
+"stream": ExtResource("12_amm4j")
+}, {
+"end_offset": 0.4325056,
+"start_offset": 0.24121183,
+"stream": ExtResource("12_amm4j")
+}],
+"times": PackedFloat32Array(0, 0.46666667)
+}
+tracks/7/use_blend = true
 
 [sub_resource type="Animation" id="Animation_tl2vt"]
 resource_name = "wave"
@@ -1167,23 +1202,27 @@ position = Vector2(0, -58)
 script = ExtResource("vote_icons_script")
 
 [node name="VoteIcon5th" type="Sprite2D" parent="VoteIcons" unique_id=771288744]
+z_index = -10
 rotation = 2.3561945
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="VoteIcon1st" type="Sprite2D" parent="VoteIcons" unique_id=1687552712]
+z_index = -10
 position = Vector2(-56.396896, 41.679714)
 rotation = 1.2476885
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="VoteIcon3rd" type="Sprite2D" parent="VoteIcons" unique_id=999773359]
+z_index = -10
 position = Vector2(-42.396904, 19.679718)
 rotation = 1.62609
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="VoteIcon2nd" type="Sprite2D" parent="VoteIcons" unique_id=1144744434]
+z_index = -10
 position = Vector2(57.00993, 44.5349)
 rotation = 5.256807
 scale = Vector2(0.65, 0.65)
@@ -1191,6 +1230,7 @@ texture = ExtResource("5_it457")
 flip_h = true
 
 [node name="VoteIcon4th" type="Sprite2D" parent="VoteIcons" unique_id=320346634]
+z_index = -10
 position = Vector2(46.009922, 23.534904)
 rotation = 4.9547396
 scale = Vector2(0.65, 0.65)

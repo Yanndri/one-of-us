@@ -38,6 +38,8 @@ var _face_sprites: Node
 var _previous_face: StringName = &"default"
 var _dialogue_face: StringName = &""
 var _face_time_remaining: float = -1.0
+# The talking babble, playing only while the line is typing out.
+var _babble: AudioStreamPlayer
 
 
 func _ready() -> void:
@@ -80,6 +82,7 @@ func say(speaker: StringName, text: String, duration: float = 3.0) -> void:
 	_time_remaining = duration
 	show()
 	set_process(true)
+	_start_babble()
 
 
 func wait_until_finished() -> void:
@@ -134,8 +137,26 @@ func _restore_message_face() -> void:
 	_face_time_remaining = -1.0
 
 
+func _start_babble() -> void:
+	_stop_babble()
+	_babble = GlobalAudio.playSound(GlobalAudio.TALKING, true, -20.0)
+	# Loop it so longer lines keep babbling until the last letter appears.
+	if _babble != null:
+		var stream: AudioStream = _babble.stream
+		if stream is AudioStreamMP3:
+			(stream as AudioStreamMP3).loop = true
+
+
+func _stop_babble() -> void:
+	if is_instance_valid(_babble):
+		_babble.stop()
+		_babble.queue_free()
+	_babble = null
+
+
 func stop_talking() -> void:
 	var was_talking := visible
+	_stop_babble()
 	_restore_message_face()
 	# Hide every pointer before switching speakers or ending a line.
 	for pointer in speakers.get_children():
@@ -163,6 +184,9 @@ func _process(delta: float) -> void:
 		var typing_time := (character_count - _revealed_characters) / characters_per_second
 		_revealed_characters = minf(_revealed_characters + delta * characters_per_second, character_count)
 		dialogue_text.visible_characters = floori(_revealed_characters)
+		if _revealed_characters >= character_count:
+			# The whole line is showing, so the speaker stops talking.
+			_stop_babble()
 		# Only count down the reading time once the complete line is visible.
 		delta = maxf(delta - typing_time, 0.0)
 	_time_remaining -= delta

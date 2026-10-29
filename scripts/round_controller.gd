@@ -34,6 +34,17 @@ var input_window: float = 0.15
 # How long an NPC's pointing arm takes to swing onto a new target. 0 snaps instantly.
 @export_range(0.0, 1.0, 0.05) var npc_pointing_tween_duration: float = 0.3
 
+# Chapter title card: the label grows to the screen center, changes text, holds, then goes back.
+@export var chapter_title_scale: float = 2.5
+@export_range(0.1, 2.0, 0.05) var chapter_title_move_duration: float = 0.6
+@export_range(0.0, 5.0, 0.1) var chapter_title_hold: float = 1.5
+
+# The "3, 2, 1, beep" before each turn. Go Time is where the final beep falls in the sound,
+# so the player's turn starts right on it. Nudge it if the beep feels early or late.
+@export var play_countdown: bool = true
+@export_range(0.0, 5.0, 0.05) var countdown_go_time: float = 3.0
+@export_range(-40.0, 6.0, 1.0) var music_volume_db: float = -10.0
+
 # Excluded characters fade to this tint (the alpha makes them see-through).
 @export var excluded_color: Color = Color(0.55, 0.55, 0.55, 0.55)
 @export_range(0.0, 3.0, 0.1) var excluded_fade_duration: float = 1.0
@@ -111,8 +122,6 @@ var _pointing_tweens: Dictionary = {}
 @export var chapter_four_rounds: Array[int] = [4, 4, 4]
 # Seconds the Leader takes to glide into Friend's seat in the ending where Friend is gone.
 @export_range(0.1, 5.0, 0.1) var leader_glide_duration: float = 1.5
-# What the player's body becomes when they turn into "one of us".
-@export var player_conform_body: Texture2D = preload("res://assets/Kenney_Shapes/PNG/Default/purple_body_circle.png")
 @export_group("")
 
 const RANDOM_GESTURES: Array[StringName] = [&"clap", &"peace", &"hands_up", &"rock"]
@@ -134,6 +143,8 @@ var _help_round: bool = false
 var chapter_four_round: int = 0
 # The final round: a slip just means trying again together.
 var _final_round: bool = false
+# Chapter 3: the player begged for one more chance with everyone pointing at them.
+var _last_chance: bool = false
 # Friend's node, kept even if Friend is excluded and leaves the Friend list.
 var _friend: Node2D
 # True once anyone has pointed at the player, so lines can refer back to how that felt.
@@ -192,6 +203,9 @@ func _ready() -> void:
 	await lane.prepare_icons()
 	player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
 	player.reset_gesture_feedback()
+	# Show Chapter 1's title card with the label's own text from the scene.
+	GlobalAudio.playMusic(GlobalAudio.BACKGROUND_MUSIC, music_volume_db)
+	await _announce_chapter(chapter_label.text)
 	# Friend guides the player while Leader demonstrates the sequence.
 	# The round clock stays stopped until Introduction's wait_time has passed.
 	await dialogue.play_line(&"Introduction")
@@ -352,8 +366,14 @@ func _process(delta: float) -> void:
 
 
 func _start_response() -> void:
-	# The message's wait_time controls preparation before the response starts.
-	await dialogue.play_line(&"YourTurn")
+	if play_countdown:
+		# The countdown sets the timing: the turn starts on its final beep.
+		GlobalAudio.playSound(GlobalAudio.COUNTDOWN, false, -16.0)
+		dialogue.play_line(&"YourTurn")
+		await get_tree().create_timer(countdown_go_time).timeout
+	else:
+		# The message's wait_time controls preparation before the response starts.
+		await dialogue.play_line(&"YourTurn")
 	# No scoring or marker movement until all the waits have finished.
 	elapsed = 0.0
 	current_beat = -1
@@ -730,7 +750,7 @@ func _start_chapter_two() -> void:
 	await _lower_hands_one_by_one()
 	odd_one_out = chapter_two_odd_one_out
 	chapter = 2
-	chapter_label.text = "Chapter [b]2 : [/b][i]The Odd One Out"
+	await _announce_chapter("Chapter [b]2 : [/b][i]The Odd One Out")
 	await dialogue.play_line(&"ChapterTwoIntro")
 	await dialogue.wait_until_finished()
 	_restart_level()
@@ -805,7 +825,7 @@ func _start_chapter_three() -> void:
 	# This time the one who can't keep up is Friend.
 	odd_one_out = friend_animations[0].get_parent() as Node2D
 	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"default")
-	chapter_label.text = "Chapter [b]3 : [/b][i]Follow My Lead"
+	await _announce_chapter("Chapter [b]3 : [/b][i]Follow My Lead")
 	await dialogue.play_line(&"ChapterThreeIntro")
 	await dialogue.wait_until_finished()
 	_restart_level()
@@ -859,6 +879,10 @@ func _clear_chapter_three_round() -> void:
 
 func _retry_help_round() -> void:
 	player.free_gesturing_enabled = false
+	# They already had their one more chance: now the player is the one singled out.
+	if _last_chance:
+		await _game_over(&"C3SingledOutForFriend")
+		return
 	# Friend copied the mistake, so it counts against them like any other mess-up.
 	if odd_votes < _odd_vote_pool():
 		await _add_odd_accuser()
@@ -905,9 +929,14 @@ func _run_friend_pressure() -> void:
 	if gave_in:
 		await _play_friend_excluded_ending()
 		return
-	# Held out. If everyone is now pointing at the player, the player is the one singled out.
+	# Held out with everyone pointing at the player: they ask for one last help round.
 	if pointing_npc_animations.size() >= npc_animations.size():
-		await _game_over(&"C3SingledOutForFriend")
+		_last_chance = true
+		await dialogue.play_line(&"C3OneMoreChance")
+		await dialogue.wait_until_finished()
+		await dialogue.play_line(&"C3LastChance")
+		await dialogue.wait_until_finished()
+		_restart_level()
 		return
 	# Otherwise another help round. Whoever turned on the player keeps pointing at them.
 	await dialogue.play_line(&"C3StillWithMe")
@@ -952,6 +981,44 @@ func _play_help_success() -> void:
 	_start_chapter_four()
 
 
+func _announce_chapter(text: String) -> void:
+	# Grow the chapter label to the middle of the screen, swap its text, hold, then return it.
+	# It grows by font size rather than scale, so the letters stay sharp at every size.
+	var home_position := chapter_label.position
+	var home_size := chapter_label.size
+	var home_z := chapter_label.z_index
+	var home_wrap := chapter_label.autowrap_mode
+	var base_font_size := chapter_label.get_theme_font_size(&"normal_font_size")
+	# Draw above the characters, and keep the title on one line while it's big.
+	chapter_label.z_index = 100
+	chapter_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	var grow := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	grow.tween_method(_set_title_card.bind(home_position, base_font_size), 0.0, 1.0, chapter_title_move_duration)
+	await grow.finished
+	chapter_label.text = text
+	_set_title_card(1.0, home_position, base_font_size)
+	await get_tree().create_timer(chapter_title_hold).timeout
+	var back := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	back.tween_method(_set_title_card.bind(home_position, base_font_size), 1.0, 0.0, chapter_title_move_duration)
+	await back.finished
+	for font_size in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size", &"mono_font_size"]:
+		chapter_label.remove_theme_font_size_override(font_size)
+	chapter_label.autowrap_mode = home_wrap
+	chapter_label.position = home_position
+	chapter_label.size = home_size
+	chapter_label.z_index = home_z
+
+
+func _set_title_card(t: float, home_position: Vector2, base_font_size: int) -> void:
+	# t = 0 is the label's normal place and size; t = 1 is big and centered on the screen.
+	var font_size := roundi(lerpf(base_font_size, base_font_size * chapter_title_scale, t))
+	for font_name in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size", &"mono_font_size"]:
+		chapter_label.add_theme_font_size_override(font_name, font_size)
+	chapter_label.reset_size()
+	var centered := chapter_label.get_parent_area_size() / 2.0 - chapter_label.size / 2.0
+	chapter_label.position = home_position.lerp(centered, t)
+
+
 func _start_chapter_four() -> void:
 	await _lower_hands_one_by_one()
 	chapter = 4
@@ -960,7 +1027,7 @@ func _start_chapter_four() -> void:
 	_final_round = false
 	odd_one_out = null
 	_load_round(chapter_four_levels, chapter_four_rounds, 0)
-	chapter_label.text = "Chapter [b]4 : [/b][i]One of Us"
+	await _announce_chapter("Chapter [b]4 : [/b][i]One of Us")
 	await dialogue.play_line(&"ChapterFourIntro")
 	await dialogue.wait_until_finished()
 	_restart_level()
@@ -1111,23 +1178,11 @@ func _play_ending_one_of_us() -> void:
 
 
 func _turn_player_into_one_of_them() -> void:
-	# Fade to purple, then swap to the NPCs' body color, hands and face.
-	var faces: Node = player.get_node("FaceSprites")
-	var npc_faces: Node = npc_animations[0].get_parent().get_node("FaceSprites") if not npc_animations.is_empty() else null
+	# Fade, then swap to the player's Conform textures (set on FaceSprites in player.tscn).
 	var fade := create_tween()
 	fade.tween_property(player, "modulate", Color(0.75, 0.55, 1.0), 0.6)
 	await fade.finished
-	if player_conform_body != null:
-		faces.body_sprite = player_conform_body
-	if npc_faces != null:
-		faces.face_sprite = npc_faces.face_sprite
-		faces.wavehand_sprite = npc_faces.wavehand_sprite
-		faces.pointhand_sprite = npc_faces.pointhand_sprite
-		faces.peacehand_sprite = npc_faces.peacehand_sprite
-		faces.rocknrollhand_sprite = npc_faces.rocknrollhand_sprite
-		faces.thumbsuphand_sprite = npc_faces.thumbsuphand_sprite
-		faces.fisthand_sprite = npc_faces.fisthand_sprite
-	faces.set_default_face_expression(&"default")
+	player.get_node("FaceSprites").become_conformed()
 	var back := create_tween()
 	back.tween_property(player, "modulate", Color.WHITE, 0.6)
 	await back.finished

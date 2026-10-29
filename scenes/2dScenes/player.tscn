@@ -3,11 +3,29 @@
 [ext_resource type="PackedScene" uid="uid://cbb533vdh4aru" path="res://scenes/2dScenes/body_template.tscn" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://bopy3akoprg4b" path="res://scenes/2dScenes/player.gd" id="2_player"]
 [ext_resource type="Theme" uid="uid://disxpgqeuwt71" path="res://themes/main_theme.tres" id="3_mlyub"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_body_circle.png" id="conform_body"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="conform_face"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_open.png" id="conform_open"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_point.png" id="conform_point"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_peace.png" id="conform_peace"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_rock.png" id="conform_rock"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_thumb.png" id="conform_thumb"]
+[ext_resource type="Texture2D" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_closed.png" id="conform_closed"]
 
 [node name="Player" unique_id=909801526 groups=["Player"] instance=ExtResource("1_3vyb7")]
 script = ExtResource("2_player")
 pointing_tween_duration = 0.2
 mistake_face_duration = 0.3
+
+[node name="FaceSprites" parent="." index="0" unique_id=2042377121]
+conform_body_sprite = ExtResource("conform_body")
+conform_face_sprite = ExtResource("conform_face")
+conform_wavehand_sprite = ExtResource("conform_open")
+conform_pointhand_sprite = ExtResource("conform_point")
+conform_peacehand_sprite = ExtResource("conform_peace")
+conform_rocknrollhand_sprite = ExtResource("conform_rock")
+conform_thumbsuphand_sprite = ExtResource("conform_thumb")
+conform_fisthand_sprite = ExtResource("conform_closed")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="." index="10" unique_id=1613581147]
 offset_left = -31.0
