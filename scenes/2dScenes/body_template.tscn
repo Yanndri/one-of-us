@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://cbb533vdh4aru"]
 
 [ext_resource type="Script" uid="uid://pw1w5pe1iiqt" path="res://scenes/2dScenes/body_template.gd" id="1_pjwan"]
-[ext_resource type="Script" path="res://scripts/character_selection.gd" id="selection_script"]
 [ext_resource type="Texture2D" uid="uid://defrg341onar8" path="res://assets/Kenney_Shapes/PNG/Default/blue_body_circle.png" id="2_quv6x"]
 [ext_resource type="Texture2D" uid="uid://dl17s66in1hwu" path="res://assets/Kenney_Shapes/PNG/Default/face_a.png" id="3_fb0rc"]
 [ext_resource type="Texture2D" uid="uid://cgvvrccgh25ci" path="res://assets/Kenney_Shapes/PNG/Default/face_i.png" id="4_amm4j"]
@@ -24,6 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://itmogmsk2rwb" path="res://assets/Kenney_Shapes/PNG/Default/face_e.png" id="12_ot5sf"]
 [ext_resource type="Texture2D" uid="uid://qnvsd2x1nagw" path="res://assets/Kenney_Shapes/PNG/Default/face_d.png" id="13_y0m07"]
 [ext_resource type="Texture2D" uid="uid://bnrxben7nexji" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="14_rbvpj"]
+[ext_resource type="Script" uid="uid://dccwfkyc4qwx2" path="res://scripts/character_selection.gd" id="selection_script"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ptkwr"]
 radius = 42.0119
@@ -247,8 +247,112 @@ tracks/17/keys = {
 "values": [false]
 }
 
-[sub_resource type="Animation" id="Animation_hwkja"]
+[sub_resource type="Animation" id="Animation_7ibqf"]
 resource_name = "clap"
+length = 0.5
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FaceSprites:hand_pose")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": ["wave"]
+}
+tracks/1/type = "audio"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AudioStreamPlayer2D")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"clips": [{
+"end_offset": 0.7437,
+"start_offset": 0.45,
+"stream": ExtResource("11_mj610")
+}],
+"times": PackedFloat32Array(0.2)
+}
+tracks/1/use_blend = true
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LeftArmPivot/LeftHand:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.35, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(32, 24), Vector2(-29, 35.999996), Vector2(-29, 35.999996), Vector2(32, 24)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("RightArmPivot/RightHand:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.35, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-29, 23), Vector2(30, 35.999996), Vector2(30, 35.999996), Vector2(-29, 23)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("RightArmPivot/RightHand:flip_v")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LeftArmPivot/LeftHand:flip_v")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("LeftArmPivot/LeftHand:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [3.3184848, 2.2863813201125716]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("RightArmPivot/RightHand:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [-3.369897, -2.548180707911721]
+}
+
+[sub_resource type="Animation" id="Animation_hwkja"]
+resource_name = "clap2"
 length = 0.5
 step = 0.05
 tracks/0/type = "value"
@@ -947,7 +1051,8 @@ tracks/2/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hwkja"]
 _data = {
 &"RESET": SubResource("Animation_7n8xq"),
-&"clap": SubResource("Animation_hwkja"),
+&"clap": SubResource("Animation_7ibqf"),
+&"clap2": SubResource("Animation_hwkja"),
 &"default": SubResource("Animation_4wlns"),
 &"hands_up": SubResource("Animation_0tygy"),
 &"peace": SubResource("Animation_oqhh6"),
@@ -1069,5 +1174,5 @@ autoplay = &"default"
 libraries/ = SubResource("AnimationLibrary_p5esr")
 autoplay = &"idle"
 
-[node name="Selection" type="Node" parent="."]
+[node name="Selection" type="Node" parent="." unique_id=1441764839]
 script = ExtResource("selection_script")

@@ -62,6 +62,7 @@ border_color = Color(0.90692437, 0.65850776, 0.89135426, 1)
 
 [node name="RoundController" type="Node" parent="." unique_id=1906648030]
 script = ExtResource("6_round")
+seat_slide_distance = 10.0
 
 [node name="Player" parent="." unique_id=909801526 instance=ExtResource("5_player")]
 position = Vector2(465, 84)
@@ -137,6 +138,7 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_top = 18.0
 offset_bottom = 50.0
+grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_ptkwr")
 
