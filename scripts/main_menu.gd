@@ -1,12 +1,12 @@
 extends Control
 
-# The start menu on the table. Friend waves once each time START is hovered.
+# The start menu on the table. The player waves once each time START is hovered.
 # RoundController waits for start_pressed, then hides the menu and starts the game.
 
 signal start_pressed
 
-# Friend's AnimationPlayer, for the wave.
-@export var friend_animation_path: NodePath = ^"../../../Friend/AnimationPlayer"
+# The character who waves when START is hovered (the player, alone at the table on the menu).
+@export var waver_animation_path: NodePath = ^"../../../Player/AnimationPlayer"
 
 @onready var main_menu: Control = $MainMenu
 @onready var settings_panel: Control = $SettingsPanel
@@ -16,7 +16,7 @@ signal start_pressed
 @onready var credits_panel: Control = $CreditsPanel
 @onready var credits_button: Button = $MainMenu/CREDITS
 @onready var credits_back_button: Button = $CreditsPanel/BACK
-@onready var friend_animation: AnimationPlayer = get_node_or_null(friend_animation_path)
+@onready var waver_animation: AnimationPlayer = get_node_or_null(waver_animation_path)
 
 var _waving: bool = false
 
@@ -75,20 +75,20 @@ func _close_credits() -> void:
 
 func _wave_once() -> void:
 	# Staying on the button doesn't repeat the wave, and a wave never restarts while playing.
-	if friend_animation == null or _waving or not visible:
+	if waver_animation == null or _waving or not visible:
 		return
 	_waving = true
 	_play_pose(&"wave")
-	await friend_animation.animation_finished
+	await waver_animation.animation_finished
 	_play_pose(&"default")
 	_waving = false
 
 
 func _play_pose(animation: StringName) -> void:
 	# Clear hand offsets left by the previous pose, the same way RoundController does.
-	friend_animation.stop()
-	friend_animation.play("RESET")
-	friend_animation.advance(0.0)
-	friend_animation.stop()
-	friend_animation.play(animation)
-	friend_animation.advance(0.0)
+	waver_animation.stop()
+	waver_animation.play("RESET")
+	waver_animation.advance(0.0)
+	waver_animation.stop()
+	waver_animation.play(animation)
+	waver_animation.advance(0.0)

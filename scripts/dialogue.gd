@@ -40,6 +40,12 @@ var _dialogue_face: StringName = &""
 var _face_time_remaining: float = -1.0
 # The talking babble, playing only while the line is typing out.
 var _babble: AudioStreamPlayer
+# Space/Enter or a click on the box: the first press finishes typing, the next skips the line.
+# RoundController turns this off while the player is answering a rhythm.
+var skip_enabled: bool = true
+# Counts lines so a skip only cuts short the wait of the line that was showing.
+var _line_id: int = 0
+var _skip_line_id: int = -1
 
 
 func _ready() -> void:
@@ -63,8 +69,10 @@ func play_line(line_name: StringName, reading_time_override: float = -1.0, speak
 	# Use `await dialogue.play_line(...)` to wait before the caller continues.
 	# Dialogue typing and rendering keep running while that caller is waiting.
 	var wait_time := maxf(float(line.get("wait_time", 0.0)), 0.0)
-	if wait_time > 0.0:
-		await get_tree().create_timer(wait_time).timeout
+	var line_id := _line_id
+	var timer := get_tree().create_timer(wait_time)
+	while timer.time_left > 0.0 and _skip_line_id != line_id:
+		await get_tree().process_frame
 
 
 func say(speaker: StringName, text: String, duration: float = 3.0) -> void:
@@ -78,6 +86,7 @@ func say(speaker: StringName, text: String, duration: float = 3.0) -> void:
 	dialogue_text.text = text
 	dialogue_text.add_theme_color_override("default_color", _speaker_color(speaker))
 	dialogue_text.visible_characters = 0
+	_line_id += 1
 	pointer.show()
 	_time_remaining = duration
 	show()
@@ -139,7 +148,7 @@ func _restore_message_face() -> void:
 
 func _start_babble() -> void:
 	_stop_babble()
-	_babble = GlobalAudio.playSound(GlobalAudio.TALKING, true, -20.0)
+	_babble = GlobalAudio.playSound(GlobalAudio.TALKING, true, -10.0)
 	# Loop it so longer lines keep babbling until the last letter appears.
 	if _babble != null:
 		var stream: AudioStream = _babble.stream
@@ -170,6 +179,35 @@ func stop_talking() -> void:
 	set_process(false)
 	if was_talking:
 		line_finished.emit()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"ui_accept") and not event.is_echo() and _advance():
+		get_viewport().set_input_as_handled()
+
+
+func _input(event: InputEvent) -> void:
+	# Only clicks on the box itself advance; clicks anywhere else are still for pointing.
+	var click := event as InputEventMouseButton
+	if click != null and click.pressed and click.button_index == MOUSE_BUTTON_LEFT 			and visible and get_global_rect().has_point(click.position) and _advance():
+		get_viewport().set_input_as_handled()
+
+
+func _advance() -> bool:
+	if not skip_enabled:
+		return false
+	if visible and _revealed_characters < dialogue_text.get_total_character_count():
+		# Finish typing the line at once.
+		_revealed_characters = dialogue_text.get_total_character_count()
+		dialogue_text.visible_characters = -1
+		_stop_babble()
+		return true
+	if visible or _skip_line_id != _line_id:
+		# Close the line and stop play_line's wait, so the next line starts now.
+		_skip_line_id = _line_id
+		stop_talking()
+		return true
+	return false
 
 
 func _process(delta: float) -> void:

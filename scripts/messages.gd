@@ -12,7 +12,7 @@ var messages: Dictionary = {
 	# Friend introduces the leader's demonstration.
 	# Opening: Friend welcomes the player before anyone else arrives.
 	&"FriendGreeting": {
-		"text": "Hey, you made it! Come sit with me.",
+		"text": "Uy, you made it! Come sit with me.",
 		"speaker": &"Friend1",
 		"reading_time": 2.5,
 		"wait_time": 2.5,
@@ -35,7 +35,7 @@ var messages: Dictionary = {
 	},
 	# The Leader states the group's rule before anything else.
 	&"LeaderIntro": {
-		"text": "A new face. Here, we all [u]move as one[/u].",
+		"text": "A new face. Here, we all [u]move as one[/u]. Sabay-sabay.",
 		"speaker": &"Leader",
 		"reading_time": 3.0,
 		"wait_time": 3.0,
@@ -168,6 +168,15 @@ var messages: Dictionary = {
 		"face": &"smug",
 		"face_time": 2.5,
 	},
+	# Before the countdown: the Leader names the pressure.
+	&"Pakikisama": {
+		"text": "Come on. Point with [u]US[/u].",
+		"speaker": &"Leader",
+		"reading_time": 2.5,
+		"wait_time": 3.0,
+		"face": &"smug",
+		"face_time": 2.5,
+	},
 	&"PointThemOut": {
 		"text": "Hey! You're pointing at the [u]wrong person[/u]!",
 		"speaker": &"Leader",
@@ -177,7 +186,7 @@ var messages: Dictionary = {
 	# Pressure lines play one by one while the player refuses to point.
 	# Gameplay replaces the speaker with the NPC who turns on the player.
 	&"Pressure1": {
-		"text": "Come on.",
+		"text": "Ano na? Come on.",
 		"speaker": &"NPC1",
 		"reading_time": 2.0,
 		"face": &"angry",
@@ -280,7 +289,7 @@ var messages: Dictionary = {
 		"face_time": 2.0,
 	},
 	&"C3Again": {
-		"text": "Again. I'm with you.",
+		"text": "Okay lang. I'm with you.",
 		"speaker": &"Friend1",
 		"reading_time": 2.5,
 		"wait_time": 3.0,
@@ -377,6 +386,19 @@ var messages: Dictionary = {
 		"reading_time": 3.0,
 		"wait_time": 3.5,
 	},
+	# The player answers Friend, and the Leader realizes what he's been doing.
+	&"C4PlayerHelp": {
+		"text": "Yeah. With a little help, [u]nothing's impossible[/u].",
+		"speaker": &"Player1",
+		"reading_time": 3.0,
+		"wait_time": 3.5,
+	},
+	&"C4LeaderRealizes": {
+		"text": "...You're right. Maybe a mistake isn't something to [u]point at[/u].",
+		"speaker": &"Leader",
+		"reading_time": 3.5,
+		"wait_time": 4.0,
+	},
 	&"C4LeaderFollowMyLead": {
 		"text": "...It's okay. Just [u]follow my lead[/u].",
 		"speaker": &"Leader",
@@ -384,7 +406,7 @@ var messages: Dictionary = {
 		"wait_time": 3.5,
 	},
 	&"C4Together": {
-		"text": "Everyone. [wave amp=30 freq=5]Together.[/wave]",
+		"text": "Everyone. [wave amp=30 freq=5]Sabay-sabay.[/wave]",
 		"speaker": &"Leader",
 		"reading_time": 2.5,
 		"wait_time": 2.5,

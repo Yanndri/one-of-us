@@ -22,6 +22,7 @@ var input_window: float = 0.15
 
 @onready var chapter_label = $"../Control/ChapterLabel"
 @onready var menu: Control = $"../Control/RoundTable/Menu"
+@onready var leader_mask: Sprite2D = get_node_or_null("../Leader/Body/Mask")
 # Per-chapter screen tint; set the colors on InnerColor in the Inspector.
 @onready var inner_color = $"../Control/InnerColor"
 @onready var reflection_screen = $"../Control/ReflectionScreen"
@@ -36,6 +37,12 @@ var input_window: float = 0.15
 @export_range(0.1, 2.0, 0.05) var hand_lower_interval: float = 0.6
 # Intro: how long each character's pop-in takes, and the gap between characters popping in.
 @export_range(0.05, 1.0, 0.05) var intro_pop_duration: float = 0.35
+# The Leader's mask (Leader/Body/Mask). It comes off in the "together" ending
+# and floats onto the player in the "one of us" ending.
+@export_range(0.1, 3.0, 0.1) var mask_off_duration: float = 1.0
+@export_range(0.1, 3.0, 0.1) var mask_float_duration: float = 1.2
+# The Leader's face once the mask comes off.
+@export var leader_unmasked_face: StringName = &"smile"
 @export_range(0.0, 1.0, 0.05) var intro_pop_gap: float = 0.15
 # How long an NPC's pointing arm takes to swing onto a new target. 0 snaps instantly.
 @export_range(0.0, 1.0, 0.05) var npc_pointing_tween_duration: float = 0.3
@@ -202,8 +209,10 @@ func _ready() -> void:
 	_play_pose(&"default")
 	player.rhythm_action.connect(_on_rhythm_action)
 	player.pointed_at.connect(func(_target: Node2D) -> void: _update_vote_icons())
-	# Start menu: only the table, the controls and Friend are visible until START is clicked.
+	# Start menu: only the table, the controls and the player are visible until START is clicked.
 	_show_gameplay(false)
+	# Let the player try the W/A/S/D gestures while sitting at the menu.
+	player.free_gesturing_enabled = true
 	# Music starts on the menu so the volume sliders can be heard. On web, browsers keep it
 	# silent until the first click, then Godot resumes it automatically.
 	GlobalAudio.playMusic(GlobalAudio.BACKGROUND_MUSIC, music_volume_db)
@@ -214,13 +223,16 @@ func _ready() -> void:
 	player.reset_gesture_feedback()
 	# The menu hides itself and handles Friend's wave (main_menu.gd).
 	await menu.start_pressed
-	# Intro: the player arrives and talks with Friend, then the Leader appears,
+	player.free_gesturing_enabled = false
+	player.perform_rhythm_action(&"rest")
+	# Intro: Friend arrives and talks with the player, then the Leader appears,
 	# and the rest of the group joins after the intro dialogue.
 	lane.visible = true
 	chapter_label.visible = true
 	# Show Chapter 1's title card with the label's own text from the scene.
 	await chapter_label.announce(chapter_label.text)
-	_pop_in(player)
+	if not friend_animations.is_empty():
+		_pop_in(friend_animations[0].get_parent())
 	await get_tree().create_timer(intro_pop_duration).timeout
 	for line in [&"FriendGreeting", &"PlayerGreeting", &"FriendReassure"]:
 		await dialogue.play_line(line)
@@ -250,8 +262,9 @@ func _pop_in(character: Node2D) -> void:
 
 
 func _show_gameplay(visible_now: bool) -> void:
-	# Everything except the table, the keyboard controls and Friend.
-	player.visible = visible_now
+	# Everything except the table, the keyboard controls and the player.
+	if not friend_animations.is_empty():
+		friend_animations[0].get_parent().visible = visible_now
 	leader_animation.get_parent().visible = visible_now
 	for animation in npc_animations:
 		animation.get_parent().visible = visible_now
@@ -385,6 +398,7 @@ func _process(delta: float) -> void:
 		phase = &"finished"
 		_update_vote_icons()
 		player.rhythm_input_enabled = false
+		dialogue.skip_enabled = true
 		player.free_gesturing_enabled = true
 		player.perform_rhythm_action(&"rest")
 		player.reset_gesture_feedback()
@@ -427,6 +441,7 @@ func _start_response() -> void:
 	phase = &"response"
 	_update_vote_icons()
 	player.rhythm_input_enabled = true
+	dialogue.skip_enabled = false
 	player.reset_gesture_feedback()
 	_play_followers_pose(&"default")
 	lane.show_player(0.0)
@@ -903,6 +918,8 @@ func _run_peer_pressure() -> void:
 		# If the time ran out with no click, skip straight to the pressure.
 		if first_target != null:
 			await dialogue.play_line(&"PointThemOut")
+			await dialogue.wait_until_finished()
+		await dialogue.play_line(&"Pakikisama")
 		# Each pause without pointing turns one more NPC from the odd one out to the player.
 		for index in pressure_lines.size():
 			if await _wait_for_accusation(pressure_interval):
@@ -1150,7 +1167,13 @@ func _play_leader_learns() -> void:
 	# Path A: Friend is with you, and the Leader learns from the two of you.
 	await dialogue.play_line(&"C4Remember")
 	await dialogue.wait_until_finished()
+	await dialogue.play_line(&"C4PlayerHelp")
+	await dialogue.wait_until_finished()
+	# The Leader lowers his hand and takes off the mask as he realizes it.
 	_play_character_pose(leader_animation, &"default")
+	_take_off_leader_mask()
+	await dialogue.play_line(&"C4LeaderRealizes")
+	await dialogue.wait_until_finished()
 	await dialogue.play_line(&"C4LeaderFollowMyLead")
 	await dialogue.wait_until_finished()
 	await _lower_hands_one_by_one()
@@ -1253,10 +1276,39 @@ func _play_ending_one_of_us() -> void:
 		await glide.finished
 	await dialogue.play_line(&"C4OneOfUsNow")
 	await dialogue.wait_until_finished()
+	# The Leader's mask floats over to the player while they turn purple.
+	_give_leader_mask_to_player()
 	await _turn_player_into_one_of_them()
 	player.point_at(odd_one_out.global_position)
 	await get_tree().create_timer(1.5).timeout
 	_show_reflection(&"ReflectionOneOfUs")
+
+
+func _take_off_leader_mask() -> void:
+	# Lift the mask up and fade it out, revealing the Leader's real face underneath.
+	if leader_mask == null or not leader_mask.visible:
+		return
+	leader_animation.get_parent().get_node("FaceSprites").set_default_face_expression(leader_unmasked_face)
+	var lift := create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	lift.tween_property(leader_mask, "position", leader_mask.position + Vector2(0, -24), mask_off_duration)
+	lift.tween_property(leader_mask, "modulate:a", 0.0, mask_off_duration)
+	await lift.finished
+	leader_mask.hide()
+
+
+func _give_leader_mask_to_player() -> void:
+	# Move the actual mask node from the Leader's body onto the player's, keeping its on-screen spot,
+	# then float it into the same place on the player's face that it had on the Leader's.
+	if leader_mask == null or not leader_mask.visible:
+		return
+	var leader_body := leader_mask.get_parent() as Node2D
+	var player_body := player.get_node("Body") as Node2D
+	var offset := leader_mask.global_position - leader_body.global_position
+	leader_mask.reparent(player_body, true)
+	var float_over := create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	float_over.tween_property(leader_mask, "global_position", player_body.global_position + offset, mask_float_duration)
+	float_over.tween_property(leader_mask, "global_rotation", player_body.global_rotation, mask_float_duration)
+	await float_over.finished
 
 
 func _turn_player_into_one_of_them() -> void:
@@ -1420,6 +1472,7 @@ func _restart_level() -> void:
 	pointing_npc_animation = null
 	_reacted_this_attempt = false
 	player.rhythm_input_enabled = false
+	dialogue.skip_enabled = true
 	player.free_gesturing_enabled = false
 	player.perform_rhythm_action(&"rest")
 	player.reset_gesture_feedback()

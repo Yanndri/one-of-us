@@ -23,6 +23,7 @@
 [ext_resource type="Script" uid="uid://efsq84sjtwpg" path="res://scripts/messages.gd" id="17_messages"]
 [ext_resource type="Texture2D" uid="uid://48iqbyh0j0pw" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_rock.png" id="18_mxvw5"]
 [ext_resource type="Texture2D" uid="uid://c2cirnodw5elx" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_point.png" id="20_xrxkg"]
+[ext_resource type="Texture2D" uid="uid://defrg341onar8" path="res://assets/Kenney_Shapes/PNG/Default/blue_body_circle.png" id="29_w3rk5"]
 [ext_resource type="Script" uid="uid://bb7psckj0ttxg" path="res://scripts/chapter_label.gd" id="chapter_label_script"]
 [ext_resource type="Shader" uid="uid://d1nnmq714lvrm" path="res://shaders/drifting_dots.gdshader" id="drifting_dots"]
 [ext_resource type="Script" uid="uid://1blpcn7kyro4" path="res://scripts/inner_color.gd" id="inner_color_script"]
@@ -678,6 +679,35 @@ color = Color(0, 0.34117648, 1, 0.19215687)
 script = ExtResource("inner_color_script")
 chapter_colors = Array[Color]([Color(0, 0.34117648, 1, 0.19215687), Color(0.48235294, 0, 1, 0.19215687), Color(1, 0.4509804, 0, 0.19215687), Color(0, 0.84313726, 0.4392157, 0.19215687)])
 metadata/_edit_lock_ = true
+
+[node name="GameTitle" type="RichTextLabel" parent="Control" unique_id=586748529]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -992.0
+offset_top = 272.0
+offset_right = -752.0
+offset_bottom = 320.0
+grow_horizontal = 0
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "[center][color=#738fe9]One[/color] [color=#f2f2f2]Of[/color] [pulse freq=1.0 color=#a45aef80 ease=-1.0][color=#a45aef]Us[/color][/pulse][/center]"
+fit_content = true
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Control/GameTitle" unique_id=387706634]
+layout_mode = 0
+offset_left = 64.00001
+offset_top = 7.999998
+offset_right = 88.00001
+offset_bottom = 31.999998
+rotation = 0.40482238
+texture = ExtResource("29_w3rk5")
+expand_mode = 2
 
 [editable path="Control/RoundTable/Menu/MainMenu/START"]
 [editable path="Control/RoundTable/Menu/MainMenu/SETTINGS"]

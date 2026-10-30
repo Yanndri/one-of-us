@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <!-- Feathers: two green leaves and a magenta drop, from your design -->
+  <path d="M23 1 C 28 3, 32 6, 35 11 C 30 11, 26 7, 23 1 Z" fill="#0faa7b"/>
+  <path d="M57 1 C 52 3, 48 6, 45 11 C 50 11, 54 7, 57 1 Z" fill="#0faa7b"/>
+  <path d="M40 0 C 43.5 4, 44.5 8, 40 12.5 C 35.5 8, 36.5 4, 40 0 Z" fill="#aa0f45"/>
+  <!-- Mask: white face, gold outline, pointed top corners, rounded chin -->
+  <path d="M11 3.5 L 19 9.5 C 30 12.5, 50 12.5, 61 9.5 L 69 3.5 L 67.5 14 C 71 20, 72 30, 71 40 C 70 55, 58 68, 40 75.5 C 22 68, 10 55, 9 40 C 8 30, 9 20, 12.5 14 Z"
+        fill="#ffffff" stroke="#c9b60f" stroke-width="2.4" stroke-linejoin="round"/>
+  <!-- Green eye rings joined in the middle -->
+  <path d="M40 30 C 34 22.5, 20 22.5, 14.5 28.5 C 18 36.5, 32 37, 40 30 Z" fill="none" stroke="#0faa7b" stroke-width="2.8" stroke-linejoin="round"/>
+  <path d="M40 30 C 46 22.5, 60 22.5, 65.5 28.5 C 62 36.5, 48 37, 40 30 Z" fill="none" stroke="#0faa7b" stroke-width="2.8" stroke-linejoin="round"/>
+  <!-- Pink cheeks -->
+  <circle cx="17.5" cy="42.5" r="3.4" fill="#e07198"/>
+  <circle cx="62.5" cy="42.5" r="3.4" fill="#e07198"/>
+  <!-- Big red smile, white inside -->
+  <path d="M21 48.5 C 30 52.5, 50 52.5, 59 48.5 C 58 58, 50 64.5, 40 64.5 C 30 64.5, 22 58, 21 48.5 Z" fill="#aa0f0f"/>
+  <path d="M26.5 54.5 C 34 56.8, 46 56.8, 53.5 54.5 C 50.5 59, 45 61.3, 40 61.3 C 35 61.3, 29.5 59, 26.5 54.5 Z" fill="#ffffff"/>
+</svg>

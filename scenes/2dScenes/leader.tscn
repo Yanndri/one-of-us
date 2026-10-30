@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dflsjgbkmo78u" path="res://assets/Kenney_Shapes/PNG/Default/purple_body_rhombus.png" id="2_808tp"]
 [ext_resource type="Texture2D" uid="uid://cxdaqg4dcpno8" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_h.png" id="3_fbkli"]
 [ext_resource type="Texture2D" uid="uid://cnc7sffr5afsd" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_open.png" id="3_krv14"]
+[ext_resource type="Texture2D" uid="uid://bnrxben7nexji" path="res://assets/Kenney_Shapes/PNG/Default/face_f.png" id="3_ygo0s"]
 [ext_resource type="Texture2D" uid="uid://s1slsex8g3f1" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_b.png" id="4_koldm"]
 [ext_resource type="Texture2D" uid="uid://bvacbmm8m8urs" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_i.png" id="5_ygo0s"]
 [ext_resource type="Texture2D" uid="uid://bk5nmxfckld78" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_c.png" id="6_v01ie"]
@@ -11,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://cb0r86sinb07s" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_e.png" id="8_qatir"]
 [ext_resource type="Texture2D" uid="uid://c7kdjx3lbroqg" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_d.png" id="9_ipabo"]
 [ext_resource type="Texture2D" uid="uid://dyxgaj0yq5jnm" path="res://assets/Kenney_Shapes/PNG/girlfaces/face_f.png" id="10_s3668"]
+[ext_resource type="Texture2D" uid="uid://b5egdel2hx6to" path="res://assets/Kenney_Shapes/PNG/Default/mask_design_smooth.png" id="17_koldm"]
 [ext_resource type="Texture2D" uid="uid://dxu1fa3r01f7k" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_closed.png" id="pose_closed"]
 [ext_resource type="Texture2D" uid="uid://uaymrhvmlr38" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_peace.png" id="pose_peace"]
 [ext_resource type="Texture2D" uid="uid://3iipmvkycahn" path="res://assets/Kenney_Shapes/PNG/Default/purple_hand_point.png" id="pose_point"]
@@ -22,7 +24,7 @@ script = null
 
 [node name="FaceSprites" parent="." index="0" unique_id=2042377121]
 body_sprite = ExtResource("2_808tp")
-face_sprite = ExtResource("3_fbkli")
+face_sprite = ExtResource("3_ygo0s")
 sadfacelevel1_sprite = ExtResource("4_koldm")
 sadfacelevel2_sprite = ExtResource("5_ygo0s")
 smileface_sprite = ExtResource("6_v01ie")
@@ -42,8 +44,15 @@ fisthand_sprite = ExtResource("pose_closed")
 scale = Vector2(1.2, 1.2)
 texture = ExtResource("2_808tp")
 
+[node name="Mask" type="Sprite2D" parent="Body" index="0" unique_id=1746109457]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, 5)
+scale = Vector2(0.8333333, 0.8333333)
+texture = ExtResource("17_koldm")
+
 [node name="Face" parent="." index="3" unique_id=2004765950]
-texture = ExtResource("3_fbkli")
+texture = ExtResource("3_ygo0s")
 
 [node name="LeftHand" parent="LeftArmPivot" parent_id_path=PackedInt32Array(257578237) index="0" unique_id=135106367]
 texture = ExtResource("3_krv14")

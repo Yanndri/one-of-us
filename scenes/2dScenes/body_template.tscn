@@ -1175,6 +1175,7 @@ texture = ExtResource("3_fb0rc")
 position = Vector2(32, 0)
 
 [node name="LeftHand" type="Sprite2D" parent="LeftArmPivot" unique_id=135106367]
+z_index = 5
 position = Vector2(32, 24)
 rotation = 2.285604
 texture = ExtResource("4_aqmxk")
@@ -1184,6 +1185,7 @@ flip_h = true
 position = Vector2(-32, 0)
 
 [node name="RightHand" type="Sprite2D" parent="RightArmPivot" unique_id=1253301101]
+z_index = 5
 position = Vector2(-29, 23)
 rotation = -2.5488782
 texture = ExtResource("4_aqmxk")
@@ -1194,6 +1196,7 @@ position = Vector2(32, 0)
 rotation = -0.64143944
 
 [node name="PointHand" type="Sprite2D" parent="Pointing" unique_id=811569203]
+z_index = 5
 position = Vector2(44, 30)
 rotation = 1.1990992
 texture = ExtResource("5_it457")
