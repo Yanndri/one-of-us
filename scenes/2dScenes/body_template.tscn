@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bryvq7808sdrs" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_open.png" id="4_aqmxk"]
 [ext_resource type="Texture2D" uid="uid://bs07nx55o742j" path="res://assets/Kenney_Shapes/PNG/Default/face_b.png" id="5_cnv0j"]
 [ext_resource type="Texture2D" uid="uid://c2cirnodw5elx" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_point.png" id="5_it457"]
+[ext_resource type="Texture2D" uid="uid://dc0fj07g50d2r" path="res://assets/Kenney_Shapes/PNG/Default/face_c_sad.png" id="6_0osg4"]
 [ext_resource type="Texture2D" uid="uid://c876nqcbogiv1" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_peace.png" id="6_8fci4"]
 [ext_resource type="Texture2D" uid="uid://d3h37qsyule3q" path="res://assets/Kenney_Shapes/PNG/Default/face_k.png" id="7_k5tj1"]
 [ext_resource type="Texture2D" uid="uid://48iqbyh0j0pw" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_rock.png" id="7_mj610"]
@@ -1142,8 +1143,9 @@ script = ExtResource("1_pjwan")
 script = ExtResource("10_appearance")
 body_sprite = ExtResource("2_quv6x")
 face_sprite = ExtResource("3_fb0rc")
-sadfacelevel1_sprite = ExtResource("5_cnv0j")
-sadfacelevel2_sprite = ExtResource("4_amm4j")
+annoyedface_sprite = ExtResource("5_cnv0j")
+sadfacelevel1_sprite = ExtResource("4_amm4j")
+sadfacelevel2_sprite = ExtResource("6_0osg4")
 sadfacelevel3_sprite = ExtResource("7_k5tj1")
 sadfacelevel4_sprite = ExtResource("8_ot5sf")
 smileface_sprite = ExtResource("9_fpxqp")
@@ -1201,27 +1203,27 @@ position = Vector2(0, -58)
 script = ExtResource("vote_icons_script")
 
 [node name="VoteIcon5th" type="Sprite2D" parent="VoteIcons" unique_id=771288744]
-z_index = -5
+z_index = 1
 rotation = 2.3561945
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="VoteIcon1st" type="Sprite2D" parent="VoteIcons" unique_id=1687552712]
-z_index = -5
+z_index = 1
 position = Vector2(-56.396896, 41.679714)
 rotation = 1.2476885
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="VoteIcon3rd" type="Sprite2D" parent="VoteIcons" unique_id=999773359]
-z_index = -5
+z_index = 1
 position = Vector2(-42.396904, 19.679718)
 rotation = 1.62609
 scale = Vector2(0.65, 0.65)
 texture = ExtResource("5_it457")
 
 [node name="VoteIcon2nd" type="Sprite2D" parent="VoteIcons" unique_id=1144744434]
-z_index = -5
+z_index = 1
 position = Vector2(57.00993, 44.5349)
 rotation = 5.256807
 scale = Vector2(0.65, 0.65)
@@ -1229,7 +1231,7 @@ texture = ExtResource("5_it457")
 flip_h = true
 
 [node name="VoteIcon4th" type="Sprite2D" parent="VoteIcons" unique_id=320346634]
-z_index = -5
+z_index = 1
 position = Vector2(46.009922, 23.534904)
 rotation = 4.9547396
 scale = Vector2(0.65, 0.65)

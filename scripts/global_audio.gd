@@ -12,6 +12,41 @@ const TALKING: AudioStream = preload("res://assets/music/u_xg7ssi08yr-cartoon-ph
 # Music keeps playing across scene reloads (Play Again, Game Over) because GlobalAudio is an autoload.
 var _music_player: AudioStreamPlayer
 
+# Volumes from the settings screen, saved between sessions (browser storage on web).
+const SETTINGS_PATH := "user://settings.cfg"
+const VOLUME_BUSES: Array[StringName] = [&"Master", &"Music", &"SFX"]
+
+
+func _ready() -> void:
+	var config := ConfigFile.new()
+	if config.load(SETTINGS_PATH) != OK:
+		return
+	for bus in VOLUME_BUSES:
+		setBusVolume(bus, config.get_value("audio", String(bus), 1.0))
+
+
+# Volume as 0 (muted) to 1 (full), the way the settings sliders show it.
+func getBusVolume(bus: StringName) -> float:
+	var index := AudioServer.get_bus_index(bus)
+	if index < 0 or AudioServer.is_bus_mute(index):
+		return 0.0
+	return db_to_linear(AudioServer.get_bus_volume_db(index))
+
+
+func setBusVolume(bus: StringName, volume: float) -> void:
+	var index := AudioServer.get_bus_index(bus)
+	if index < 0:
+		return
+	AudioServer.set_bus_mute(index, volume <= 0.0)
+	AudioServer.set_bus_volume_db(index, linear_to_db(maxf(volume, 0.0001)))
+
+
+func saveVolumes() -> void:
+	var config := ConfigFile.new()
+	for bus in VOLUME_BUSES:
+		config.set_value("audio", String(bus), getBusVolume(bus))
+	config.save(SETTINGS_PATH)
+
 
 # Each sound gets its own player so simultaneous sounds do not cut each other off.
 # Pass false as the second argument when you want the original pitch.

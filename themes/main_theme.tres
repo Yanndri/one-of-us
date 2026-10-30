@@ -70,10 +70,23 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7ceur"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 0.40392157, 0.101960786, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 6
+
 [resource]
 Button/styles/disabled = SubResource("StyleBoxFlat_rjgu6")
 Button/styles/focus = SubResource("StyleBoxFlat_vu6l5")
 Button/styles/hover = SubResource("StyleBoxFlat_ydht1")
 Button/styles/normal = SubResource("StyleBoxFlat_8gw6x")
 Button/styles/pressed = SubResource("StyleBoxFlat_g21io")
+HSlider/styles/slider = SubResource("StyleBoxFlat_7ceur")
 RichTextLabel/fonts/normal_font = ExtResource("1_rjgu6")

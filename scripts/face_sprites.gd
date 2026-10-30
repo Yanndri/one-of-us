@@ -13,6 +13,10 @@ extends Node
 		face_sprite = value
 		_queue_refresh()
 # Player pressure uses these levels; level 2 also supplies brief mistake feedback.
+@export var annoyedface_sprite: Texture2D:
+	set(value):
+		annoyedface_sprite = value
+		_queue_refresh()
 @export var sadfacelevel1_sprite: Texture2D:
 	set(value):
 		sadfacelevel1_sprite = value

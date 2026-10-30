@@ -1,7 +1,5 @@
 [gd_scene format=3 uid="uid://cam38fm3xfdqy"]
 
-[ext_resource type="Script" path="res://scripts/main_menu.gd" id="main_menu_script"]
-[ext_resource type="Script" path="res://scripts/chapter_label.gd" id="chapter_label_script"]
 [ext_resource type="PackedScene" uid="uid://c7i0tyogfuh5x" path="res://scenes/2dScenes/npc.tscn" id="1_glv2v"]
 [ext_resource type="PackedScene" uid="uid://ce0dv1wsmflt" path="res://scenes/2dScenes/leader.tscn" id="4_cm0pq"]
 [ext_resource type="Theme" uid="uid://disxpgqeuwt71" path="res://themes/main_theme.tres" id="5_lgr22"]
@@ -25,6 +23,10 @@
 [ext_resource type="Script" uid="uid://efsq84sjtwpg" path="res://scripts/messages.gd" id="17_messages"]
 [ext_resource type="Texture2D" uid="uid://48iqbyh0j0pw" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_rock.png" id="18_mxvw5"]
 [ext_resource type="Texture2D" uid="uid://c2cirnodw5elx" path="res://assets/Kenney_Shapes/PNG/Default/blue_hand_point.png" id="20_xrxkg"]
+[ext_resource type="Script" uid="uid://bb7psckj0ttxg" path="res://scripts/chapter_label.gd" id="chapter_label_script"]
+[ext_resource type="Shader" uid="uid://d1nnmq714lvrm" path="res://shaders/drifting_dots.gdshader" id="drifting_dots"]
+[ext_resource type="Script" uid="uid://1blpcn7kyro4" path="res://scripts/inner_color.gd" id="inner_color_script"]
+[ext_resource type="Script" uid="uid://b71my6l64qr22" path="res://scripts/main_menu.gd" id="main_menu_script"]
 [ext_resource type="PackedScene" uid="uid://bhffg2wv51vj" path="res://scenes/ui/reflection_screen.tscn" id="reflection_screen"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oxdc4"]
@@ -66,6 +68,14 @@ border_width_bottom = 2
 border_color = Color(0.90692437, 0.65850776, 0.89135426, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ptkwr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_background"]
+shader = ExtResource("drifting_dots")
+shader_parameter/base_color = Color(0.24705882, 0.24705882, 0.25882354, 1)
+shader_parameter/dot_color = Color(1, 1, 1, 0.05)
+shader_parameter/grid = 18.0
+shader_parameter/dot_size = 0.12
+shader_parameter/drift = Vector2(0.015, 0.01)
 
 [node name="Node2D" type="Node2D" unique_id=540957774]
 
@@ -131,35 +141,155 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ptkwr")
 
 [node name="Menu" type="MarginContainer" parent="Control/RoundTable" unique_id=636247430]
-script = ExtResource("main_menu_script")
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
+script = ExtResource("main_menu_script")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/RoundTable/Menu" unique_id=399643732]
+[node name="MainMenu" type="VBoxContainer" parent="Control/RoundTable/Menu" unique_id=399643732]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="START" parent="Control/RoundTable/Menu/VBoxContainer" unique_id=1597583792 instance=ExtResource("7_hhcpw")]
+[node name="START" parent="Control/RoundTable/Menu/MainMenu" unique_id=1597583792 instance=ExtResource("7_hhcpw")]
 z_index = 10
 layout_mode = 2
 
-[node name="SETTINGS" parent="Control/RoundTable/Menu/VBoxContainer" unique_id=1016984655 instance=ExtResource("7_hhcpw")]
+[node name="SETTINGS" parent="Control/RoundTable/Menu/MainMenu" unique_id=1016984655 instance=ExtResource("7_hhcpw")]
 z_index = 10
 layout_mode = 2
 
-[node name="RichTextLabel" parent="Control/RoundTable/Menu/VBoxContainer/SETTINGS" index="0" unique_id=1113262917]
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/MainMenu/SETTINGS" index="0" unique_id=1113262917]
 text = "SETTINGS"
 
-[node name="CREDITS" parent="Control/RoundTable/Menu/VBoxContainer" unique_id=1408039866 instance=ExtResource("7_hhcpw")]
+[node name="CREDITS" parent="Control/RoundTable/Menu/MainMenu" unique_id=1408039866 instance=ExtResource("7_hhcpw")]
 z_index = 10
 layout_mode = 2
 
-[node name="RichTextLabel" parent="Control/RoundTable/Menu/VBoxContainer/CREDITS" index="0" unique_id=1113262917]
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/MainMenu/CREDITS" index="0" unique_id=1113262917]
 text = "CREDITS"
+
+[node name="BACK" parent="Control/RoundTable/Menu/MainMenu" unique_id=909396278 instance=ExtResource("7_hhcpw")]
+visible = false
+z_index = 10
+layout_mode = 2
+
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/MainMenu/BACK" index="0" unique_id=1113262917]
+text = "BACK
+"
+
+[node name="SettingsPanel" type="VBoxContainer" parent="Control/RoundTable/Menu" unique_id=804402573]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Master" type="HBoxContainer" parent="Control/RoundTable/Menu/SettingsPanel" unique_id=1703033666]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="MasterLabel" type="RichTextLabel" parent="Control/RoundTable/Menu/SettingsPanel/Master" unique_id=1204792613]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Master"
+fit_content = true
+scroll_active = false
+
+[node name="MasterSlider" type="HSlider" parent="Control/RoundTable/Menu/SettingsPanel/Master" unique_id=1830516704]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+max_value = 2.0
+step = 0.05
+value = 1.0
+
+[node name="Music" type="HBoxContainer" parent="Control/RoundTable/Menu/SettingsPanel" unique_id=1999893633]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="MusicLabel" type="RichTextLabel" parent="Control/RoundTable/Menu/SettingsPanel/Music" unique_id=1579983785]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Music"
+fit_content = true
+scroll_active = false
+
+[node name="MusicSlider" type="HSlider" parent="Control/RoundTable/Menu/SettingsPanel/Music" unique_id=2013596770]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+max_value = 2.0
+step = 0.05
+value = 1.0
+
+[node name="SFX" type="HBoxContainer" parent="Control/RoundTable/Menu/SettingsPanel" unique_id=1112725894]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="SFXLabel" type="RichTextLabel" parent="Control/RoundTable/Menu/SettingsPanel/SFX" unique_id=533126620]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "SFX"
+fit_content = true
+scroll_active = false
+
+[node name="SFXSlider" type="HSlider" parent="Control/RoundTable/Menu/SettingsPanel/SFX" unique_id=1770670254]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+max_value = 2.0
+step = 0.05
+value = 1.0
+
+[node name="BACK" parent="Control/RoundTable/Menu/SettingsPanel" unique_id=1205679689 instance=ExtResource("7_hhcpw")]
+z_index = 10
+layout_mode = 2
+
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/SettingsPanel/BACK" index="0" unique_id=1113262917]
+text = "BACK
+"
+
+[node name="CreditsPanel" type="VBoxContainer" parent="Control/RoundTable/Menu" unique_id=721025038]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/RoundTable/Menu/CreditsPanel" unique_id=488323395]
+custom_minimum_size = Vector2(320, 120)
+layout_mode = 2
+bbcode_enabled = true
+text = "Made with Godot Engine
+
+Made by Yapper Devs
+itch.io: [i]https://memosa.itch.io/[/i]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BACK" parent="Control/RoundTable/Menu/CreditsPanel" unique_id=1480209244 instance=ExtResource("7_hhcpw")]
+z_index = 10
+layout_mode = 2
+
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/CreditsPanel/BACK" index="0" unique_id=1113262917]
+text = "BACK
+"
 
 [node name="RhythmLane" type="Control" parent="Control" unique_id=559066242]
 layout_mode = 1
@@ -500,7 +630,6 @@ unique_name_in_owner = true
 script = ExtResource("17_messages")
 
 [node name="ChapterLabel" type="RichTextLabel" parent="Control" unique_id=1225985059]
-script = ExtResource("chapter_label_script")
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
@@ -509,16 +638,52 @@ offset_bottom = 48.0
 bbcode_enabled = true
 text = "Chapter [b]1 : [/b][[i]Fitting in"
 fit_content = true
+script = ExtResource("chapter_label_script")
 
 [node name="ReflectionScreen" parent="Control" unique_id=134489204 instance=ExtResource("reflection_screen")]
 visible = false
 z_index = 0
 layout_mode = 1
 
-[node name="PlayAgain" parent="Control/ReflectionScreen/Center/VBox" parent_id_path=PackedInt32Array(134489204, 1949822235) index="1"]
+[node name="RichTextLabel" parent="Control/ReflectionScreen/Center/VBox/PlayAgain" parent_id_path=PackedInt32Array(134489204, 125284341) index="0" unique_id=1113262917]
 text = "Play again"
 
-[editable path="Control/RoundTable/Menu/VBoxContainer/START"]
-[editable path="Control/RoundTable/Menu/VBoxContainer/SETTINGS"]
-[editable path="Control/RoundTable/Menu/VBoxContainer/CREDITS"]
+[node name="Background" type="ColorRect" parent="Control" unique_id=568815736]
+z_index = -100
+material = SubResource("ShaderMaterial_background")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -160.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.24705882, 0.24705882, 0.25882354, 1)
+metadata/_edit_lock_ = true
+
+[node name="InnerColor" type="ColorRect" parent="Control" unique_id=1006424534]
+z_index = -11
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -160.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0.34117648, 1, 0.19215687)
+script = ExtResource("inner_color_script")
+chapter_colors = Array[Color]([Color(0, 0.34117648, 1, 0.19215687), Color(0.48235294, 0, 1, 0.19215687), Color(1, 0.4509804, 0, 0.19215687), Color(0, 0.84313726, 0.4392157, 0.19215687)])
+metadata/_edit_lock_ = true
+
+[editable path="Control/RoundTable/Menu/MainMenu/START"]
+[editable path="Control/RoundTable/Menu/MainMenu/SETTINGS"]
+[editable path="Control/RoundTable/Menu/MainMenu/CREDITS"]
+[editable path="Control/RoundTable/Menu/MainMenu/BACK"]
+[editable path="Control/RoundTable/Menu/SettingsPanel/BACK"]
+[editable path="Control/RoundTable/Menu/CreditsPanel/BACK"]
 [editable path="Control/ReflectionScreen"]
+[editable path="Control/ReflectionScreen/Center/VBox/PlayAgain"]

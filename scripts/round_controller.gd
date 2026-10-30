@@ -22,6 +22,8 @@ var input_window: float = 0.15
 
 @onready var chapter_label = $"../Control/ChapterLabel"
 @onready var menu: Control = $"../Control/RoundTable/Menu"
+# Per-chapter screen tint; set the colors on InnerColor in the Inspector.
+@onready var inner_color = $"../Control/InnerColor"
 @onready var reflection_screen = $"../Control/ReflectionScreen"
 
 # How far a seat moves away from the table per step (per accuser for the player).
@@ -32,6 +34,9 @@ var input_window: float = 0.15
 @export var ticks_match_timing_window: bool = true
 # At the end of a chapter, everyone still pointing lowers their hand one at a time, this far apart.
 @export_range(0.1, 2.0, 0.05) var hand_lower_interval: float = 0.6
+# Intro: how long each character's pop-in takes, and the gap between characters popping in.
+@export_range(0.05, 1.0, 0.05) var intro_pop_duration: float = 0.35
+@export_range(0.0, 1.0, 0.05) var intro_pop_gap: float = 0.15
 # How long an NPC's pointing arm takes to swing onto a new target. 0 snaps instantly.
 @export_range(0.0, 1.0, 0.05) var npc_pointing_tween_duration: float = 0.3
 
@@ -199,6 +204,9 @@ func _ready() -> void:
 	player.pointed_at.connect(func(_target: Node2D) -> void: _update_vote_icons())
 	# Start menu: only the table, the controls and Friend are visible until START is clicked.
 	_show_gameplay(false)
+	# Music starts on the menu so the volume sliders can be heard. On web, browsers keep it
+	# silent until the first click, then Godot resumes it automatically.
+	GlobalAudio.playMusic(GlobalAudio.BACKGROUND_MUSIC, music_volume_db)
 	if not lane.is_node_ready():
 		await lane.ready
 	await lane.prepare_icons()
@@ -206,17 +214,39 @@ func _ready() -> void:
 	player.reset_gesture_feedback()
 	# The menu hides itself and handles Friend's wave (main_menu.gd).
 	await menu.start_pressed
-	_show_gameplay(true)
+	# Intro: the player arrives and talks with Friend, then the Leader appears,
+	# and the rest of the group joins after the intro dialogue.
+	lane.visible = true
+	chapter_label.visible = true
 	# Show Chapter 1's title card with the label's own text from the scene.
-	GlobalAudio.playMusic(GlobalAudio.BACKGROUND_MUSIC, music_volume_db)
 	await chapter_label.announce(chapter_label.text)
+	_pop_in(player)
+	await get_tree().create_timer(intro_pop_duration).timeout
+	for line in [&"FriendGreeting", &"PlayerGreeting", &"FriendReassure"]:
+		await dialogue.play_line(line)
+		await dialogue.wait_until_finished()
+	_pop_in(leader_animation.get_parent())
+	await get_tree().create_timer(intro_pop_duration).timeout
 	await dialogue.play_line(&"LeaderIntro")
 	await dialogue.wait_until_finished()
 	# Friend guides the player while Leader demonstrates the sequence.
 	# The round clock stays stopped until Introduction's wait_time has passed.
 	await dialogue.play_line(&"Introduction")
+	await dialogue.wait_until_finished()
+	for animation in npc_animations:
+		_pop_in(animation.get_parent())
+		await get_tree().create_timer(intro_pop_gap).timeout
 	_save_checkpoint()
 	set_process(true)
+
+
+func _pop_in(character: Node2D) -> void:
+	# Appear with a quick overshoot "pop", growing from nothing to the character's own scale.
+	var full_scale := character.scale
+	character.scale = Vector2.ZERO
+	character.visible = true
+	var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(character, "scale", full_scale, intro_pop_duration)
 
 
 func _show_gameplay(visible_now: bool) -> void:
@@ -834,6 +864,7 @@ func _start_chapter_two() -> void:
 	await _lower_hands_one_by_one()
 	odd_one_out = chapter_two_odd_one_out
 	chapter = 2
+	inner_color.set_chapter(chapter)
 	await chapter_label.announce("Chapter [b]2 : [/b][i]The Odd One Out")
 	await dialogue.play_line(&"ChapterTwoIntro")
 	await dialogue.wait_until_finished()
@@ -910,6 +941,7 @@ func _start_chapter_three() -> void:
 	# This time the one who can't keep up is Friend.
 	odd_one_out = friend_animations[0].get_parent() as Node2D
 	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"default")
+	inner_color.set_chapter(chapter)
 	await chapter_label.announce("Chapter [b]3 : [/b][i]Follow My Lead")
 	await dialogue.play_line(&"ChapterThreeIntro")
 	await dialogue.wait_until_finished()
@@ -1075,6 +1107,7 @@ func _start_chapter_four() -> void:
 	_final_round = false
 	odd_one_out = null
 	_load_round(chapter_four_levels, chapter_four_rounds, 0)
+	inner_color.set_chapter(chapter)
 	await chapter_label.announce("Chapter [b]4 : [/b][i]One of Us")
 	await dialogue.play_line(&"ChapterFourIntro")
 	await dialogue.wait_until_finished()

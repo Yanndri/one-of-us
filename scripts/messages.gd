@@ -10,6 +10,29 @@ extends Node
 #await dialogue.play_line(&"NPCAccusation", -1.0, speaker)
 var messages: Dictionary = {
 	# Friend introduces the leader's demonstration.
+	# Opening: Friend welcomes the player before anyone else arrives.
+	&"FriendGreeting": {
+		"text": "Hey, you made it! Come sit with me.",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+		"face": &"happy",
+		"face_time": 2.5,
+	},
+	&"PlayerGreeting": {
+		"text": "Thanks... I don't really know anyone here.",
+		"speaker": &"Player1",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+	},
+	&"FriendReassure": {
+		"text": "You know [u]me[/u]. Just stick close.",
+		"speaker": &"Friend1",
+		"reading_time": 2.5,
+		"wait_time": 2.5,
+		"face": &"smile",
+		"face_time": 2.5,
+	},
 	# The Leader states the group's rule before anything else.
 	&"LeaderIntro": {
 		"text": "A new face. Here, we all [u]move as one[/u].",
@@ -129,7 +152,7 @@ var messages: Dictionary = {
 	},
 	# Gameplay replaces NPC1 with whichever NPC speaks first.
 	&"OddAccusation": {
-		"text": "Did you see that? They're [color=#ff5555][shake rate=20 level=6]always behind[/shake][/color].",
+		"text": "They're [color=#ff5555][shake rate=20 level=6]always behind[/shake][/color].",
 		"speaker": &"NPC1",
 		"reading_time": 2.5,
 		"wait_time": 3.0,
