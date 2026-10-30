@@ -2,5 +2,78 @@
 
 [ext_resource type="FontFile" uid="uid://jylnv5isuq6j" path="res://assets/ADELIA.otf" id="1_rjgu6"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rjgu6"]
+content_margin_left = 20.0
+content_margin_top = 8.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.45, 0.45, 0.48, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vu6l5"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.827, 0.31, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+expand_margin_left = 3.0
+expand_margin_top = 3.0
+expand_margin_right = 3.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ydht1"]
+content_margin_left = 20.0
+content_margin_top = 32.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.9693946, 0.5513172, 3.85046e-07, 1)
+border_width_bottom = 2
+border_color = Color(0.70980394, 0.19215687, 0.25882354, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8gw6x"]
+content_margin_left = 20.0
+content_margin_top = 8.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.90487736, 0.51432043, 0, 1)
+border_width_bottom = 8
+border_color = Color(0.70980394, 0.19215687, 0.25882354, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g21io"]
+content_margin_left = 20.0
+content_margin_top = 8.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.62, 0.34, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
 [resource]
+Button/styles/disabled = SubResource("StyleBoxFlat_rjgu6")
+Button/styles/focus = SubResource("StyleBoxFlat_vu6l5")
+Button/styles/hover = SubResource("StyleBoxFlat_ydht1")
+Button/styles/normal = SubResource("StyleBoxFlat_8gw6x")
+Button/styles/pressed = SubResource("StyleBoxFlat_g21io")
 RichTextLabel/fonts/normal_font = ExtResource("1_rjgu6")

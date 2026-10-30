@@ -20,7 +20,8 @@ var input_window: float = 0.15
 @onready var dialogue = $"../Control/Dialogue"
 @onready var table = $"../Control/RoundTable"
 
-@onready var chapter_label: RichTextLabel = $"../Control/ChapterLabel"
+@onready var chapter_label = $"../Control/ChapterLabel"
+@onready var menu: Control = $"../Control/RoundTable/Menu"
 @onready var reflection_screen = $"../Control/ReflectionScreen"
 
 # How far a seat moves away from the table per step (per accuser for the player).
@@ -34,10 +35,6 @@ var input_window: float = 0.15
 # How long an NPC's pointing arm takes to swing onto a new target. 0 snaps instantly.
 @export_range(0.0, 1.0, 0.05) var npc_pointing_tween_duration: float = 0.3
 
-# Chapter title card: the label grows to the screen center, changes text, holds, then goes back.
-@export var chapter_title_scale: float = 2.5
-@export_range(0.1, 2.0, 0.05) var chapter_title_move_duration: float = 0.6
-@export_range(0.0, 5.0, 0.1) var chapter_title_hold: float = 1.5
 
 # The "3, 2, 1, beep" before each turn. Go Time is where the final beep falls in the sound,
 # so the player's turn starts right on it. Nudge it if the beep feels early or late.
@@ -145,6 +142,8 @@ var chapter_four_round: int = 0
 var _final_round: bool = false
 # Chapter 3: the player begged for one more chance with everyone pointing at them.
 var _last_chance: bool = false
+# Everything needed to replay the current chapter from its first round after Game Over.
+var _checkpoint: Dictionary = {}
 # Friend's node, kept even if Friend is excluded and leaves the Friend list.
 var _friend: Node2D
 # True once anyone has pointed at the player, so lines can refer back to how that felt.
@@ -198,18 +197,36 @@ func _ready() -> void:
 	_play_pose(&"default")
 	player.rhythm_action.connect(_on_rhythm_action)
 	player.pointed_at.connect(func(_target: Node2D) -> void: _update_vote_icons())
+	# Start menu: only the table, the controls and Friend are visible until START is clicked.
+	_show_gameplay(false)
 	if not lane.is_node_ready():
 		await lane.ready
 	await lane.prepare_icons()
 	player.set_pointing_pressure(pointing_npc_animations.size(), npc_animations.size())
 	player.reset_gesture_feedback()
+	# The menu hides itself and handles Friend's wave (main_menu.gd).
+	await menu.start_pressed
+	_show_gameplay(true)
 	# Show Chapter 1's title card with the label's own text from the scene.
 	GlobalAudio.playMusic(GlobalAudio.BACKGROUND_MUSIC, music_volume_db)
-	await _announce_chapter(chapter_label.text)
+	await chapter_label.announce(chapter_label.text)
+	await dialogue.play_line(&"LeaderIntro")
+	await dialogue.wait_until_finished()
 	# Friend guides the player while Leader demonstrates the sequence.
 	# The round clock stays stopped until Introduction's wait_time has passed.
 	await dialogue.play_line(&"Introduction")
+	_save_checkpoint()
 	set_process(true)
+
+
+func _show_gameplay(visible_now: bool) -> void:
+	# Everything except the table, the keyboard controls and Friend.
+	player.visible = visible_now
+	leader_animation.get_parent().visible = visible_now
+	for animation in npc_animations:
+		animation.get_parent().visible = visible_now
+	lane.visible = visible_now
+	chapter_label.visible = visible_now
 
 
 func _load_level(new_level: RhythmLevel) -> bool:
@@ -724,12 +741,79 @@ func _exclude(character: Node2D) -> void:
 
 
 func _game_over(line: StringName = &"GameOver") -> void:
-	# The player has been singled out. Show it, then start the game again.
+	# The player has been singled out. Show it, then offer to replay this chapter.
 	phase = &"game_over"
-	chapter_label.text = "[b]Game Over"
+	player.free_gesturing_enabled = false
 	await dialogue.play_line(line)
 	await dialogue.wait_until_finished()
-	get_tree().reload_current_scene()
+	reflection_screen.show_reflection("Game Over", "Try again", _restart_chapter)
+
+
+func _save_checkpoint() -> void:
+	var positions := {}
+	var colors := {}
+	var faces := {}
+	for character in _seats:
+		positions[character] = character.global_position
+		colors[character] = character.modulate
+		faces[character] = character.get_node("FaceSprites").default_face_expression
+	_checkpoint = {
+		"chapter": chapter,
+		"label": chapter_label.text,
+		"odd_one_out": odd_one_out,
+		"npc_animations": npc_animations.duplicate(),
+		"friend_animations": friend_animations.duplicate(),
+		"excluded": excluded.duplicate(),
+		"player_was_pointed_at": _player_was_pointed_at,
+		"positions": positions,
+		"colors": colors,
+		"faces": faces,
+	}
+
+
+func _restart_chapter() -> void:
+	# Put everyone back the way they were when this chapter's first round began, then replay it.
+	reflection_screen.hide()
+	dialogue.stop_talking()
+	chapter = _checkpoint.chapter
+	chapter_label.text = _checkpoint.label
+	odd_one_out = _checkpoint.odd_one_out
+	npc_animations.assign(_checkpoint.npc_animations)
+	friend_animations.assign(_checkpoint.friend_animations)
+	excluded.assign(_checkpoint.excluded)
+	_player_was_pointed_at = _checkpoint.player_was_pointed_at
+	pointing_npc_animations.clear()
+	odd_accuser_animations.clear()
+	pointing_npc_animation = null
+	odd_votes = 0
+	odd_voters.clear()
+	_singled_out = false
+	_help_round = false
+	_final_round = false
+	_last_chance = false
+	chapter_one_round = 0
+	chapter_three_round = 0
+	chapter_four_round = 0
+	for character in _seats:
+		character.global_position = _checkpoint.positions[character]
+		character.modulate = _checkpoint.colors[character]
+		character.get_node("FaceSprites").set_default_face_expression(_checkpoint.faces[character])
+		var animation := character.get_node_or_null("AnimationPlayer") as AnimationPlayer
+		if animation != null and character != player:
+			_play_character_pose(animation, &"default")
+	_play_pose(&"default")
+	player.set_pointing_pressure(0, npc_animations.size())
+	_clear_selections()
+	match chapter:
+		1:
+			_load_chapter_one_round(0)
+		2:
+			_load_round(chapter_two_levels, chapter_two_rounds, 0)
+		3:
+			_load_round(chapter_three_levels, chapter_three_rounds, 0)
+		_:
+			_load_round(chapter_four_levels, chapter_four_rounds, 0)
+	_restart_level()
 
 
 func _finish_chapter_one() -> void:
@@ -750,9 +834,10 @@ func _start_chapter_two() -> void:
 	await _lower_hands_one_by_one()
 	odd_one_out = chapter_two_odd_one_out
 	chapter = 2
-	await _announce_chapter("Chapter [b]2 : [/b][i]The Odd One Out")
+	await chapter_label.announce("Chapter [b]2 : [/b][i]The Odd One Out")
 	await dialogue.play_line(&"ChapterTwoIntro")
 	await dialogue.wait_until_finished()
+	_save_checkpoint()
 	_restart_level()
 
 
@@ -825,9 +910,10 @@ func _start_chapter_three() -> void:
 	# This time the one who can't keep up is Friend.
 	odd_one_out = friend_animations[0].get_parent() as Node2D
 	odd_one_out.get_node("FaceSprites").set_default_face_expression(&"default")
-	await _announce_chapter("Chapter [b]3 : [/b][i]Follow My Lead")
+	await chapter_label.announce("Chapter [b]3 : [/b][i]Follow My Lead")
 	await dialogue.play_line(&"ChapterThreeIntro")
 	await dialogue.wait_until_finished()
+	_save_checkpoint()
 	_restart_level()
 
 
@@ -981,44 +1067,6 @@ func _play_help_success() -> void:
 	_start_chapter_four()
 
 
-func _announce_chapter(text: String) -> void:
-	# Grow the chapter label to the middle of the screen, swap its text, hold, then return it.
-	# It grows by font size rather than scale, so the letters stay sharp at every size.
-	var home_position := chapter_label.position
-	var home_size := chapter_label.size
-	var home_z := chapter_label.z_index
-	var home_wrap := chapter_label.autowrap_mode
-	var base_font_size := chapter_label.get_theme_font_size(&"normal_font_size")
-	# Draw above the characters, and keep the title on one line while it's big.
-	chapter_label.z_index = 100
-	chapter_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	var grow := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	grow.tween_method(_set_title_card.bind(home_position, base_font_size), 0.0, 1.0, chapter_title_move_duration)
-	await grow.finished
-	chapter_label.text = text
-	_set_title_card(1.0, home_position, base_font_size)
-	await get_tree().create_timer(chapter_title_hold).timeout
-	var back := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
-	back.tween_method(_set_title_card.bind(home_position, base_font_size), 1.0, 0.0, chapter_title_move_duration)
-	await back.finished
-	for font_size in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size", &"mono_font_size"]:
-		chapter_label.remove_theme_font_size_override(font_size)
-	chapter_label.autowrap_mode = home_wrap
-	chapter_label.position = home_position
-	chapter_label.size = home_size
-	chapter_label.z_index = home_z
-
-
-func _set_title_card(t: float, home_position: Vector2, base_font_size: int) -> void:
-	# t = 0 is the label's normal place and size; t = 1 is big and centered on the screen.
-	var font_size := roundi(lerpf(base_font_size, base_font_size * chapter_title_scale, t))
-	for font_name in [&"normal_font_size", &"bold_font_size", &"italics_font_size", &"bold_italics_font_size", &"mono_font_size"]:
-		chapter_label.add_theme_font_size_override(font_name, font_size)
-	chapter_label.reset_size()
-	var centered := chapter_label.get_parent_area_size() / 2.0 - chapter_label.size / 2.0
-	chapter_label.position = home_position.lerp(centered, t)
-
-
 func _start_chapter_four() -> void:
 	await _lower_hands_one_by_one()
 	chapter = 4
@@ -1027,9 +1075,10 @@ func _start_chapter_four() -> void:
 	_final_round = false
 	odd_one_out = null
 	_load_round(chapter_four_levels, chapter_four_rounds, 0)
-	await _announce_chapter("Chapter [b]4 : [/b][i]One of Us")
+	await chapter_label.announce("Chapter [b]4 : [/b][i]One of Us")
 	await dialogue.play_line(&"ChapterFourIntro")
 	await dialogue.wait_until_finished()
+	_save_checkpoint()
 	_restart_level()
 
 

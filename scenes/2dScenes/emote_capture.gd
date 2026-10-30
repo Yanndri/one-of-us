@@ -19,6 +19,8 @@ func capture_poses(character: Node2D = null) -> Dictionary:
 		for group in preview.get_groups():
 			preview.remove_from_group(group)
 		preview.transform = Transform2D.IDENTITY
+		# The real Player can be hidden behind the start menu; the copy must still render.
+		preview.visible = true
 		preview.position = Vector2(128, 128)
 		add_child(preview)
 		animation_player = preview.get_node("AnimationPlayer")

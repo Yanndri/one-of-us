@@ -10,8 +10,15 @@ extends Node
 #await dialogue.play_line(&"NPCAccusation", -1.0, speaker)
 var messages: Dictionary = {
 	# Friend introduces the leader's demonstration.
+	# The Leader states the group's rule before anything else.
+	&"LeaderIntro": {
+		"text": "A new face. Here, we all [u]move as one[/u].",
+		"speaker": &"Leader",
+		"reading_time": 3.0,
+		"wait_time": 3.0,
+	},
 	&"Introduction": {
-		"text": "[u]Watch[/u] him first. Then we'll [u]copy[/u] his moves together.",
+		"text": "Don't worry. [u]Watch[/u] him first, then [u]copy[/u] his moves.",
 		"speaker": &"Friend1",
 		"reading_time": 4.0,
 		"wait_time": 4.0,

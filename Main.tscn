@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://cam38fm3xfdqy"]
 
+[ext_resource type="Script" path="res://scripts/main_menu.gd" id="main_menu_script"]
+[ext_resource type="Script" path="res://scripts/chapter_label.gd" id="chapter_label_script"]
 [ext_resource type="PackedScene" uid="uid://c7i0tyogfuh5x" path="res://scenes/2dScenes/npc.tscn" id="1_glv2v"]
 [ext_resource type="PackedScene" uid="uid://ce0dv1wsmflt" path="res://scenes/2dScenes/leader.tscn" id="4_cm0pq"]
 [ext_resource type="Theme" uid="uid://disxpgqeuwt71" path="res://themes/main_theme.tres" id="5_lgr22"]
@@ -7,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://das1eervkoleo" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_w.svg" id="6_5vvyt"]
 [ext_resource type="Script" uid="uid://ys10aak3n2ed" path="res://scripts/round_controller.gd" id="6_round"]
 [ext_resource type="Texture2D" uid="uid://cct0ni4t8oj0" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_a.svg" id="7_c6i3y"]
+[ext_resource type="PackedScene" uid="uid://drn4hqbqnjnn5" path="res://scenes/ui/button_template.tscn" id="7_hhcpw"]
 [ext_resource type="Script" uid="uid://nt853iew3xan" path="res://scripts/rhythm_lane.gd" id="7_lane"]
 [ext_resource type="Texture2D" uid="uid://dfccy13mt6gjd" path="res://assets/KenneyInputPrompts/Keyboard & Mouse/Vector/keyboard_s.svg" id="8_c2ibq"]
 [ext_resource type="PackedScene" path="res://scenes/2dScenes/emote_capture.tscn" id="8_capture"]
@@ -122,9 +125,41 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_oxdc4")
 
 [node name="Design" type="Panel" parent="Control/RoundTable" unique_id=1128296640]
+z_index = -10
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ptkwr")
+
+[node name="Menu" type="MarginContainer" parent="Control/RoundTable" unique_id=636247430]
+script = ExtResource("main_menu_script")
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/RoundTable/Menu" unique_id=399643732]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="START" parent="Control/RoundTable/Menu/VBoxContainer" unique_id=1597583792 instance=ExtResource("7_hhcpw")]
+z_index = 10
+layout_mode = 2
+
+[node name="SETTINGS" parent="Control/RoundTable/Menu/VBoxContainer" unique_id=1016984655 instance=ExtResource("7_hhcpw")]
+z_index = 10
+layout_mode = 2
+
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/VBoxContainer/SETTINGS" index="0" unique_id=1113262917]
+text = "SETTINGS"
+
+[node name="CREDITS" parent="Control/RoundTable/Menu/VBoxContainer" unique_id=1408039866 instance=ExtResource("7_hhcpw")]
+z_index = 10
+layout_mode = 2
+
+[node name="RichTextLabel" parent="Control/RoundTable/Menu/VBoxContainer/CREDITS" index="0" unique_id=1113262917]
+text = "CREDITS"
 
 [node name="RhythmLane" type="Control" parent="Control" unique_id=559066242]
 layout_mode = 1
@@ -380,6 +415,7 @@ vertical_alignment = 1
 
 [node name="Dialogue" type="PanelContainer" parent="Control" unique_id=196455975]
 unique_name_in_owner = true
+visible = false
 z_index = -10
 layout_mode = 0
 offset_left = 275.0
@@ -464,6 +500,7 @@ unique_name_in_owner = true
 script = ExtResource("17_messages")
 
 [node name="ChapterLabel" type="RichTextLabel" parent="Control" unique_id=1225985059]
+script = ExtResource("chapter_label_script")
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
@@ -478,4 +515,10 @@ visible = false
 z_index = 0
 layout_mode = 1
 
+[node name="PlayAgain" parent="Control/ReflectionScreen/Center/VBox" parent_id_path=PackedInt32Array(134489204, 1949822235) index="1"]
+text = "Play again"
+
+[editable path="Control/RoundTable/Menu/VBoxContainer/START"]
+[editable path="Control/RoundTable/Menu/VBoxContainer/SETTINGS"]
+[editable path="Control/RoundTable/Menu/VBoxContainer/CREDITS"]
 [editable path="Control/ReflectionScreen"]
