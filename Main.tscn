@@ -293,6 +293,7 @@ text = "BACK
 "
 
 [node name="RhythmLane" type="Control" parent="Control" unique_id=559066242]
+z_index = 5
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
